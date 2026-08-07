@@ -1,4 +1,6 @@
-export function ScheduleNavigator({ currentIndex, total, onChange }) {
+import { InfoIcon } from './InfoIcon.jsx'
+
+export function ScheduleNavigator({ currentIndex, total, onChange, onExport, isExporting }) {
   const goToInput = (event) => {
     const requested = Number(event.target.value)
     if (Number.isInteger(requested) && requested >= 1 && requested <= total) {
@@ -54,6 +56,9 @@ export function ScheduleNavigator({ currentIndex, total, onChange }) {
           disabled={currentIndex === total - 1}
         >
           Último
+        </button>
+        <button type="button" className="button export icon-button" onClick={onExport} disabled={isExporting}>
+          <InfoIcon name="download" /> {isExporting ? 'Preparando…' : 'Exportar PDF'}
         </button>
       </div>
     </nav>

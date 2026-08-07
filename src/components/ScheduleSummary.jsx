@@ -1,10 +1,11 @@
+import { InfoIcon } from './InfoIcon.jsx'
+
 const dayNames = {
   lunes: 'Lun',
   martes: 'Mar',
   miercoles: 'Mié',
   jueves: 'Jue',
   viernes: 'Vie',
-  sabado: 'Sáb',
 }
 
 export function ScheduleSummary({ schedule }) {
@@ -30,14 +31,14 @@ export function ScheduleSummary({ schedule }) {
                 <td><strong>{materia.clave}</strong></td>
                 <td>{materia.nombre}</td>
                 <td>{grupo.grupo}</td>
-                <td>{grupo.docente || 'Por asignar'}</td>
+                <td><span className="detail-line"><InfoIcon name="user" /> {grupo.docente || 'Por asignar'}</span></td>
                 <td>{materia.creditos}</td>
-                <td>
+                <td><span className="detail-line"><InfoIcon name="clock" />
                   {grupo.sesiones.map((session) =>
                     `${dayNames[session.dia]} ${session.inicio}-${session.fin}`,
                   ).join(' · ')}
-                </td>
-                <td>{[...new Set(grupo.sesiones.map((session) => session.aula || 'Por asignar'))].join(', ')}</td>
+                </span></td>
+                <td><span className="detail-line"><InfoIcon name="room" /> {[...new Set(grupo.sesiones.map((session) => session.aula || 'Por asignar'))].join(', ')}</span></td>
               </tr>
             ))}
           </tbody>
