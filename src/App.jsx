@@ -5,6 +5,7 @@ import { Header } from './components/Header.jsx'
 import { ScheduleGrid } from './components/ScheduleGrid.jsx'
 import { ScheduleFilters } from './components/ScheduleFilters.jsx'
 import { ScheduleNavigator } from './components/ScheduleNavigator.jsx'
+import { ScheduleComparePanel } from './components/ScheduleComparePanel.jsx'
 import { ScheduleSummary } from './components/ScheduleSummary.jsx'
 import { SubjectSelector } from './components/SubjectSelector.jsx'
 import { SubjectEditor } from './components/SubjectEditor.jsx'
@@ -24,6 +25,7 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [comparedIndexes, setComparedIndexes] = useState(() => new Set())
   const [filters, setFilters] = useState(emptyFilters)
   const [route, setRoute] = useState(() => `${window.location.pathname}${window.location.search}`)
 
@@ -60,6 +62,7 @@ function App() {
     setSelectedIds(nextIds)
     setGeneration(null)
     setCurrentIndex(0)
+    setComparedIndexes(new Set())
   }
 
   const toggleSubject = (subjectId) => {
@@ -74,12 +77,23 @@ function App() {
     saveSubjects(nextSubjects)
     setGeneration(null)
     setCurrentIndex(0)
+    setComparedIndexes(new Set())
   }
 
   const updateFilters = (nextFilters) => {
     setFilters(nextFilters)
     setGeneration(null)
     setCurrentIndex(0)
+    setComparedIndexes(new Set())
+  }
+
+  const toggleComparedIndex = (index) => {
+    setComparedIndexes((currentIndexes) => {
+      const nextIndexes = new Set(currentIndexes)
+      if (nextIndexes.has(index)) nextIndexes.delete(index)
+      else if (nextIndexes.size < 4) nextIndexes.add(index)
+      return nextIndexes
+    })
   }
 
   const saveSubject = (savedSubject) => {
@@ -103,6 +117,7 @@ function App() {
     setIsGenerating(true)
     setGeneration(null)
     setCurrentIndex(0)
+    setComparedIndexes(new Set())
 
     window.setTimeout(() => {
       const start = performance.now()
@@ -132,6 +147,8 @@ function App() {
       setIsExporting(false)
     }
   }
+
+  const clearCompared = () => setComparedIndexes(new Set())
 
   return (
     <>
@@ -210,10 +227,27 @@ function App() {
                   onChange={setCurrentIndex}
                   onExport={exportCurrentSchedule}
                   isExporting={isExporting}
+                  isCompared={comparedIndexes.has(currentIndex)}
+                  compareDisabled={!comparedIndexes.has(currentIndex) && comparedIndexes.size >= 4}
+                  onToggleCompare={() => toggleComparedIndex(currentIndex)}
                 />
                 <ScheduleGrid schedule={currentSchedule} />
                 <ScheduleSummary schedule={currentSchedule} />
               </section>
+            )}
+
+            {generation && generation.schedules.length > 0 && (
+              <ScheduleComparePanel
+                schedules={generation.schedules}
+                selectedIndexes={comparedIndexes}
+                currentIndex={currentIndex}
+                onToggle={toggleComparedIndex}
+                onClear={clearCompared}
+                onView={(index) => {
+                  setCurrentIndex(index)
+                  document.querySelector('#schedule-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
+              />
             )}
           </>
         )}

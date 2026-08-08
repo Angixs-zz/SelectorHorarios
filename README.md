@@ -81,7 +81,7 @@ src/data/materiasIniciales.js
 
 ## Primera etapa
 
-Esta versión incluye selección de materias, cálculo de créditos y combinaciones, generación con detección de empalmes, estadísticas, navegación de un horario a la vez, cuadrícula semanal, resumen y pruebas unitarias.
+Esta versión incluye selección de materias, cálculo de créditos y combinaciones, generación con detección de empalmes, estadísticas, navegación, comparación de hasta cuatro horarios, cuadrícula semanal, resumen y pruebas unitarias.
 
 ## Próximas etapas
 

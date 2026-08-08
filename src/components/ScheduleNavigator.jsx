@@ -1,6 +1,15 @@
 import { InfoIcon } from './InfoIcon.jsx'
 
-export function ScheduleNavigator({ currentIndex, total, onChange, onExport, isExporting }) {
+export function ScheduleNavigator({
+  currentIndex,
+  total,
+  onChange,
+  onExport,
+  isExporting,
+  isCompared,
+  compareDisabled,
+  onToggleCompare,
+}) {
   const goToInput = (event) => {
     const requested = Number(event.target.value)
     if (Number.isInteger(requested) && requested >= 1 && requested <= total) {
@@ -59,6 +68,15 @@ export function ScheduleNavigator({ currentIndex, total, onChange, onExport, isE
         </button>
         <button type="button" className="button export icon-button" onClick={onExport} disabled={isExporting}>
           <InfoIcon name="download" /> {isExporting ? 'Preparando…' : 'Exportar PDF'}
+        </button>
+        <button
+          type="button"
+          className={`button compare-toggle${isCompared ? ' is-active' : ''}`}
+          onClick={onToggleCompare}
+          disabled={compareDisabled}
+          aria-pressed={isCompared}
+        >
+          {isCompared ? 'Quitar de comparación' : compareDisabled ? 'Comparación completa' : 'Agregar a comparación'}
         </button>
       </div>
     </nav>
