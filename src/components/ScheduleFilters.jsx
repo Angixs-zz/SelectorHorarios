@@ -8,6 +8,8 @@ const days = [
   ['viernes', 'Vie'],
 ]
 
+const dayNames = Object.fromEntries(days)
+
 export function ScheduleFilters({ filters, professors, groupSections, selectedSubjects, combinations, onChange, onReset }) {
   const update = (field, value) => onChange({ ...filters, [field]: value })
 
@@ -28,6 +30,16 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
     else delete allowedGroupIds[subjectId]
     update('allowedGroupIds', allowedGroupIds)
   }
+
+  const clearSubjectGroups = (subjectId) => {
+    const allowedGroupIds = { ...filters.allowedGroupIds }
+    delete allowedGroupIds[subjectId]
+    update('allowedGroupIds', allowedGroupIds)
+  }
+
+  const pinnedSubjectCount = selectedSubjects.filter(
+    (subject) => (filters.allowedGroupIds[subject.id] ?? []).length > 0,
+  ).length
 
   return (
     <section className="panel filters-panel" aria-labelledby="filters-heading">
@@ -95,32 +107,48 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
         </div>
       </div>
 
-      <details className="pinned-groups-panel">
-        <summary><span><InfoIcon name="calendar" /> Fijar grupos específicos por materia</span><small>Opcional · puedes elegir uno o varios</small></summary>
-        <p className="pinned-help">Sin marcas se prueban todos los grupos. Si marcas varios, el generador conservará únicamente esas alternativas para la materia.</p>
+      <section className="pinned-groups-panel" aria-labelledby="pinned-groups-heading">
+        <div className="pinned-panel-heading">
+          <span><InfoIcon name="calendar" /><strong id="pinned-groups-heading">Fijar materias en grupos y horarios</strong></span>
+          <small>{pinnedSubjectCount > 0 ? `${pinnedSubjectCount} materias fijadas` : 'Opcional'}</small>
+        </div>
+        <p className="pinned-help">Selecciona una opción para fijar la materia en esos días y horas. Puedes fijar todas las materias que quieras. Si eliges varias opciones de una misma materia, cualquiera de ellas será aceptada.</p>
         {selectedSubjects.length === 0 && <p>Primero selecciona materias en el catálogo.</p>}
         <div className="pinned-subjects">
-          {selectedSubjects.map((subject) => (
-            <article className="pinned-subject" key={subject.id}>
-              <header><strong>{subject.nombre}</strong><span>{subject.clave}</span></header>
-              <div className="group-choice-list">
-                {subject.grupos.map((group) => {
-                  const checked = (filters.allowedGroupIds[subject.id] ?? []).includes(group.id)
-                  const schedules = [...new Set(group.sesiones.map((session) => `${session.inicio}-${session.fin}`))].join(', ')
-                  return (
-                    <label className={checked ? 'is-checked' : ''} key={group.id}>
-                      <input type="checkbox" checked={checked} onChange={() => toggleGroup(subject.id, group.id)} />
-                      <strong>{group.grupo}</strong>
-                      <span>{schedules}</span>
-                      <small>{group.docente || 'Profesor por asignar'}</small>
-                    </label>
-                  )
-                })}
-              </div>
-            </article>
-          ))}
+          {selectedSubjects.map((subject) => {
+            const selectedGroups = filters.allowedGroupIds[subject.id] ?? []
+            return (
+              <article className={`pinned-subject${selectedGroups.length > 0 ? ' has-pinned-groups' : ''}`} key={subject.id}>
+                <header>
+                  <div><strong>{subject.nombre}</strong><span>{subject.clave}</span></div>
+                  {selectedGroups.length > 0 && (
+                    <button type="button" className="text-button danger" onClick={() => clearSubjectGroups(subject.id)}>Quitar fijación</button>
+                  )}
+                </header>
+                <div className="group-choice-list">
+                  {subject.grupos.map((group) => {
+                    const checked = selectedGroups.includes(group.id)
+                    return (
+                      <label className={checked ? 'is-checked' : ''} key={group.id}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleGroup(subject.id, group.id)} />
+                        <strong>Grupo {group.grupo}</strong>
+                        <span className="group-session-list">
+                          {group.sesiones.map((session) => (
+                            <span key={`${session.dia}-${session.inicio}-${session.fin}`}>
+                              {dayNames[session.dia]} <b>{session.inicio}-{session.fin}</b>
+                            </span>
+                          ))}
+                        </span>
+                        <small>{group.docente || 'Profesor por asignar'}</small>
+                      </label>
+                    )
+                  })}
+                </div>
+              </article>
+            )
+          })}
         </div>
-      </details>
+      </section>
 
       <div className={`filter-result${combinations === 0 ? ' has-warning' : ''}`} aria-live="polite">
         <strong>{combinations.toLocaleString('es-MX')}</strong>

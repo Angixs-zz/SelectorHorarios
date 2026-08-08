@@ -66,6 +66,19 @@ describe('filtros de horarios', () => {
     expect(result[0].grupos.map((current) => current.id)).toEqual(['7SA', '7SC'])
   })
 
+  it('permite fijar grupos en varias materias al mismo tiempo', () => {
+    const subjects = [
+      { id: 'matematicas', grupos: [group('mat-1', 'A', 'lunes', '08:00', '09:00'), group('mat-2', 'B', 'lunes', '10:00', '11:00')] },
+      { id: 'redes', grupos: [group('red-1', 'C', 'martes', '08:00', '09:00'), group('red-2', 'D', 'martes', '12:00', '13:00')] },
+    ]
+    const result = filterSubjects(subjects, {
+      ...emptyFilters,
+      allowedGroupIds: { matematicas: ['mat-2'], redes: ['red-1'] },
+    })
+
+    expect(result.map((current) => current.grupos[0].id)).toEqual(['mat-2', 'red-1'])
+  })
+
   it('filtra por terminación de grupo sin importar el semestre', () => {
     const subjects = [subject([
       group('7SA', 'A', 'lunes', '10:00', '11:00'),
