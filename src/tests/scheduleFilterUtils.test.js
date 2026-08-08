@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { emptyFilters, filterSubjects, getGroupSection } from '../utils/scheduleFilterUtils.js'
+import {
+  emptyFilters,
+  filterSchedulesByFreeTime,
+  filterSubjects,
+  getGroupSection,
+} from '../utils/scheduleFilterUtils.js'
 
 const group = (id, docente, dia, inicio, fin) => ({
   id,
@@ -89,5 +94,27 @@ describe('filtros de horarios', () => {
 
     expect(result[0].grupos.map((current) => current.id)).toEqual(['7SA', '8SA'])
     expect(getGroupSection('8SU')).toBe('SU')
+  })
+
+  it('filtra horarios por el máximo acumulado de horas libres de cada día', () => {
+    const schedule = (secondStart) => [
+      { grupo: group('primero', 'A', 'lunes', '08:00', '09:00') },
+      { grupo: group('segundo', 'B', 'lunes', secondStart, '12:00') },
+    ]
+    const schedules = [schedule('10:00'), schedule('11:00')]
+
+    expect(filterSchedulesByFreeTime(schedules, '60')).toEqual([schedules[0]])
+    expect(filterSchedulesByFreeTime(schedules, '')).toBe(schedules)
+  })
+
+  it('suma varios huecos del mismo día', () => {
+    const schedule = [
+      { grupo: group('primero', 'A', 'lunes', '08:00', '09:00') },
+      { grupo: group('segundo', 'B', 'lunes', '09:30', '10:00') },
+      { grupo: group('tercero', 'C', 'lunes', '10:30', '11:00') },
+    ]
+
+    expect(filterSchedulesByFreeTime([schedule], '60')).toHaveLength(1)
+    expect(filterSchedulesByFreeTime([schedule], '30')).toHaveLength(0)
   })
 })

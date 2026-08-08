@@ -9,6 +9,10 @@ export function GenerationStats({ result }) {
     ['Tiempo aproximado', `${result.elapsedMs.toFixed(2)} ms`],
   ]
 
+  if (result.freeTimeFilterApplied) {
+    stats.splice(5, 0, ['Horarios antes del filtro de horas libres', result.schedulesBeforeFreeTimeFilter.toLocaleString('es-MX')])
+  }
+
   return (
     <section className="stats-section" aria-labelledby="stats-heading">
       <div className="section-heading">

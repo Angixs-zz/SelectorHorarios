@@ -12,7 +12,12 @@ import { SubjectEditor } from './components/SubjectEditor.jsx'
 import { generateValidSchedules } from './services/scheduleGenerator.js'
 import { exportSchedulePdf } from './services/schedulePdfExporter.js'
 import { loadSubjects, saveSubjects } from './utils/catalogStorage.js'
-import { emptyFilters, filterSubjects, getGroupSection } from './utils/scheduleFilterUtils.js'
+import {
+  emptyFilters,
+  filterSchedulesByFreeTime,
+  filterSubjects,
+  getGroupSection,
+} from './utils/scheduleFilterUtils.js'
 import {
   calculateTheoreticalCombinations,
   calculateTotalCredits,
@@ -125,9 +130,13 @@ function App() {
     window.setTimeout(() => {
       const start = performance.now()
       const result = generateValidSchedules(filteredSelectedSubjects)
+      const schedules = filterSchedulesByFreeTime(result.schedules, filters.maxDailyFreeMinutes)
       const elapsedMs = performance.now() - start
       setGeneration({
         ...result,
+        schedules,
+        schedulesBeforeFreeTimeFilter: result.schedules.length,
+        freeTimeFilterApplied: filters.maxDailyFreeMinutes !== '',
         elapsedMs,
         subjectCount: selectedSubjects.length,
         totalCredits,

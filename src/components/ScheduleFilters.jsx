@@ -88,6 +88,21 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
         </div>
 
         <div className="filter-card">
+          <h3><InfoIcon name="clock" /> Horas libres entre clases</h3>
+          <label>
+            Máximo acumulado por día
+            <select value={filters.maxDailyFreeMinutes} onChange={(event) => update('maxDailyFreeMinutes', event.target.value)}>
+              <option value="">Sin límite</option>
+              <option value="0">Sin horas libres</option>
+              <option value="60">Hasta 1 hora</option>
+              <option value="120">Hasta 2 horas</option>
+              <option value="180">Hasta 3 horas</option>
+            </select>
+          </label>
+          <p>Suma únicamente los huecos entre la primera y la última clase de cada día.</p>
+        </div>
+
+        <div className="filter-card">
           <h3><InfoIcon name="user" /> Profesor preferido</h3>
           <label>Priorizar grupos de<select value={filters.preferredTeacher} onChange={(event) => update('preferredTeacher', event.target.value)}><option value="">Sin preferencia</option>{professors.map((professor) => <option key={professor} value={professor}>{professor}</option>)}</select></label>
           <p>Solo fija al profesor en las materias que realmente imparte.</p>
