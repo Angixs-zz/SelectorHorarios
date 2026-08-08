@@ -1,10 +1,11 @@
 import { InfoIcon } from './InfoIcon.jsx'
+import { getSubjectTone } from '../utils/subjectTone.js'
 
 export function SubjectCard({ subject, selected, onToggle, onEdit }) {
   const semesters = [...new Set(subject.grupos.map((group) => group.grupo.match(/^\d+/)?.[0]).filter(Boolean))]
 
   return (
-    <article className={`subject-card${selected ? ' is-selected' : ''}`}>
+    <article className={`subject-card subject-identity-tone-${getSubjectTone(subject.id)}${selected ? ' is-selected' : ''}`}>
       <label className="subject-main">
         <input
           type="checkbox"

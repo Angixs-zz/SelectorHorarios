@@ -1,5 +1,5 @@
 :root {
-  font-family: Montserrat, 'Segoe UI', Arial, sans-serif;
+  font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif;
   color: #17212b;
   background: #f4f1ea;
   font-synthesis: none;
@@ -51,9 +51,9 @@ p {
 h1,
 h2,
 h3 {
-  font-family: Anton, Impact, sans-serif;
+  font-family: Sora, 'Segoe UI', Arial, sans-serif;
   color: var(--navy);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.015em;
 }
 
@@ -90,7 +90,7 @@ h3 {
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 50%;
-  font-family: Anton, Impact, sans-serif;
+  font-family: Sora, 'Segoe UI', Arial, sans-serif;
   font-size: 1.5rem;
 }
 
@@ -111,6 +111,68 @@ h3 {
 .page-shell {
   width: min(1400px, calc(100% - 32px));
   margin: 24px auto 56px;
+}
+
+.setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.setup-layout > .panel {
+  margin-bottom: 0;
+}
+
+.period-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  color: white;
+  background: var(--navy);
+  border-left: 6px solid var(--accent);
+  border-radius: 10px;
+}
+
+.period-panel h2,
+.period-panel p {
+  margin-bottom: 4px;
+  color: white;
+}
+
+.period-panel > div > p:last-child {
+  margin-bottom: 0;
+  color: #cbd9df;
+  font-size: 0.86rem;
+}
+
+.period-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.period-controls label {
+  display: grid;
+  gap: 5px;
+  color: #dce6ea;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.period-controls select {
+  min-width: 220px;
+  min-height: 44px;
+  padding: 8px 10px;
+  background: white;
+  border: 0;
+  border-radius: 5px;
 }
 
 .panel,
@@ -302,6 +364,18 @@ h3 {
   border-color: #78929b;
   border-left-color: var(--accent);
 }
+
+.subject-card.subject-identity-tone-1 { border-left-color: #bd754d; }
+.subject-card.subject-identity-tone-2 { border-left-color: #80749b; }
+.subject-card.subject-identity-tone-3 { border-left-color: #819559; }
+.subject-card.subject-identity-tone-4 { border-left-color: #697e9b; }
+.subject-card.subject-identity-tone-5 { border-left-color: #a26c72; }
+
+.subject-identity-tone-1 .subject-key { color: #9b4f29; }
+.subject-identity-tone-2 .subject-key { color: #67577f; }
+.subject-identity-tone-3 .subject-key { color: #657a3d; }
+.subject-identity-tone-4 .subject-key { color: #4f698c; }
+.subject-identity-tone-5 .subject-key { color: #89545b; }
 
 .subject-main {
   display: flex;
@@ -644,7 +718,7 @@ h3 {
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
-  font-family: Montserrat, 'Segoe UI', Arial, sans-serif;
+  font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif;
   font-size: 1rem;
 }
 
@@ -685,8 +759,6 @@ h3 {
 
 .pinned-subjects {
   display: grid;
-  max-height: 390px;
-  overflow-y: auto;
   gap: 10px;
   padding: 10px 17px 17px;
 }
@@ -861,8 +933,6 @@ h3 {
 
 .teacher-exclusions {
   display: grid;
-  max-height: 156px;
-  overflow-y: auto;
   padding: 4px 10px;
   background: white;
   border: 1px solid #d9d5ca;
@@ -1234,6 +1304,12 @@ footer {
   font-size: 0.82rem;
 }
 
+@media (max-width: 1100px) {
+  .setup-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1278,9 +1354,16 @@ footer {
   }
 
   .section-heading,
-  .generate-bar {
+  .generate-bar,
+  .period-panel,
+  .period-controls {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .period-controls select,
+  .period-controls .button {
+    width: 100%;
   }
 
   .compact-actions .button,
@@ -1403,8 +1486,6 @@ footer {
   flex: 1 1 100%;
   flex-wrap: wrap;
   gap: 8px;
-  max-height: 192px;
-  overflow-y: auto;
   padding: 2px;
 }
 
@@ -1577,6 +1658,12 @@ footer {
   border-radius: 5px;
   font-size: 0.76rem;
 }
+
+.compare-subjects li.subject-tone-1 { background: #f3e2d5; border-color: #bd754d; }
+.compare-subjects li.subject-tone-2 { background: #e7e3ef; border-color: #80749b; }
+.compare-subjects li.subject-tone-3 { background: #e6ecd8; border-color: #819559; }
+.compare-subjects li.subject-tone-4 { background: #e4e8ef; border-color: #697e9b; }
+.compare-subjects li.subject-tone-5 { background: #f0e4e4; border-color: #a26c72; }
 
 .compare-range {
   color: var(--navy);

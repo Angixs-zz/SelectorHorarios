@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { InfoIcon } from './InfoIcon.jsx'
+import { getSubjectTone } from '../utils/subjectTone.js'
 import {
   analyzeSchedule,
   comparisonDayNames,
@@ -202,7 +203,10 @@ function ComparisonView({ schedules, onView, onRemove }) {
                           </div>
                           <ul className="compare-subjects">
                             {dayData.sessions.map((session) => (
-                              <li key={`${session.materia.id}-${session.grupo.id}-${session.inicio}`}>
+                              <li
+                                className={`subject-tone-${getSubjectTone(session.materia.id)}`}
+                                key={`${session.materia.id}-${session.grupo.id}-${session.inicio}`}
+                              >
                                 <span className="compare-range">{session.inicio}–{session.fin}</span>
                                 <span className="compare-subject-name">{session.materia.nombre}</span>
                                 <span className="compare-group-tag">G:{session.grupo.grupo}</span>

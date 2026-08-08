@@ -1,39 +1,40 @@
 import { materiasIniciales } from '../data/materiasIniciales.js'
 
-const STORAGE_KEY = 'selector-horarios-materias'
-const STORAGE_VERSION_KEY = 'selector-horarios-version'
-const CATALOG_VERSION = 'oficial-2026-08-2'
+const LEGACY_STORAGE_KEY = 'selector-horarios-materias'
+const CATALOGS_STORAGE_KEY = 'selector-horarios-catalogos-v1'
+const DEFAULT_PERIOD_ID = '2026-agosto-diciembre'
 
-export function loadSubjects() {
+const createDefaultState = (subjects = materiasIniciales) => ({
+  activePeriodId: DEFAULT_PERIOD_ID,
+  periods: [{
+    id: DEFAULT_PERIOD_ID,
+    label: 'Agosto-Diciembre 2026',
+    subjects,
+  }],
+})
+
+export function loadCatalogState() {
   try {
-    const storedSubjects = JSON.parse(window.localStorage.getItem(STORAGE_KEY))
-    const storedVersion = window.localStorage.getItem(STORAGE_VERSION_KEY)
-    if (storedVersion === 'oficial-2026-08' && Array.isArray(storedSubjects)) {
-      const storedIds = new Set(storedSubjects.map((subject) => subject.id))
-      const mergedSubjects = [
-        ...storedSubjects,
-        ...materiasIniciales.filter((subject) => !storedIds.has(subject.id)),
-      ]
-      window.localStorage.setItem(STORAGE_VERSION_KEY, CATALOG_VERSION)
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedSubjects))
-      return mergedSubjects
+    const storedState = JSON.parse(window.localStorage.getItem(CATALOGS_STORAGE_KEY))
+    if (storedState?.activePeriodId && Array.isArray(storedState.periods) && storedState.periods.length > 0) {
+      return storedState.periods.some((period) => period.id === storedState.activePeriodId)
+        ? storedState
+        : { ...storedState, activePeriodId: storedState.periods[0].id }
     }
-    if (storedVersion !== CATALOG_VERSION) {
-      window.localStorage.setItem(STORAGE_VERSION_KEY, CATALOG_VERSION)
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(materiasIniciales))
-      return materiasIniciales
-    }
-    return Array.isArray(storedSubjects) ? storedSubjects : materiasIniciales
+
+    const legacySubjects = JSON.parse(window.localStorage.getItem(LEGACY_STORAGE_KEY))
+    const state = createDefaultState(Array.isArray(legacySubjects) ? legacySubjects : materiasIniciales)
+    saveCatalogState(state)
+    return state
   } catch {
-    return materiasIniciales
+    return createDefaultState()
   }
 }
 
-export function saveSubjects(subjects) {
+export function saveCatalogState(state) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(subjects))
-    window.localStorage.setItem(STORAGE_VERSION_KEY, CATALOG_VERSION)
+    window.localStorage.setItem(CATALOGS_STORAGE_KEY, JSON.stringify(state))
   } catch {
-    // The catalog still works for this session when storage is unavailable.
+    // The catalogs still work for this session when storage is unavailable.
   }
 }

@@ -1,5 +1,6 @@
 import { minutesToTime, timeToMinutes } from '../utils/timeUtils.js'
 import { InfoIcon } from './InfoIcon.jsx'
+import { getSubjectTone } from '../utils/subjectTone.js'
 
 const weekDays = [
   ['lunes', 'Lunes'],
@@ -45,7 +46,7 @@ export function ScheduleGrid({ schedule }) {
               ))}
               {sessions.filter((session) => session.dia === day).map((session) => (
                 <article
-                  className={`class-block subject-tone-${session.subjectIndex % 6}`}
+                  className={`class-block subject-tone-${getSubjectTone(session.materia.id)}`}
                   key={`${session.materia.id}-${session.grupo.id}-${session.inicio}`}
                   style={{
                     top: (timeToMinutes(session.inicio) - earliest) * pixelsPerMinute + 4,

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AcademicPeriodSelector } from './components/AcademicPeriodSelector.jsx'
 import { EmptyState } from './components/EmptyState.jsx'
 import { GenerationStats } from './components/GenerationStats.jsx'
 import { Header } from './components/Header.jsx'
@@ -11,7 +12,7 @@ import { SubjectSelector } from './components/SubjectSelector.jsx'
 import { SubjectEditor } from './components/SubjectEditor.jsx'
 import { generateValidSchedules } from './services/scheduleGenerator.js'
 import { exportSchedulePdf } from './services/schedulePdfExporter.js'
-import { loadSubjects, saveSubjects } from './utils/catalogStorage.js'
+import { loadCatalogState, saveCatalogState } from './utils/catalogStorage.js'
 import {
   emptyFilters,
   filterSchedulesByFreeTime,
@@ -26,7 +27,7 @@ import {
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 function App() {
-  const [subjects, setSubjects] = useState(loadSubjects)
+  const [catalogState, setCatalogState] = useState(loadCatalogState)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [generation, setGeneration] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -35,6 +36,8 @@ function App() {
   const [comparedIndexes, setComparedIndexes] = useState(() => new Set())
   const [filters, setFilters] = useState(emptyFilters)
   const [route, setRoute] = useState(() => `${window.location.pathname}${window.location.search}`)
+  const activePeriod = catalogState.periods.find((period) => period.id === catalogState.activePeriodId) ?? catalogState.periods[0]
+  const subjects = activePeriod.subjects
 
   useEffect(() => {
     const updateRoute = () => setRoute(`${window.location.pathname}${window.location.search}`)
@@ -81,11 +84,58 @@ function App() {
   }
 
   const updateCatalog = (nextSubjects) => {
-    setSubjects(nextSubjects)
-    saveSubjects(nextSubjects)
+    const nextState = {
+      ...catalogState,
+      periods: catalogState.periods.map((period) =>
+        period.id === activePeriod.id ? { ...period, subjects: nextSubjects } : period,
+      ),
+    }
+    setCatalogState(nextState)
+    saveCatalogState(nextState)
     setGeneration(null)
     setCurrentIndex(0)
     setComparedIndexes(new Set())
+  }
+
+  const resetWorkspace = () => {
+    setSelectedIds(new Set())
+    setFilters({ ...emptyFilters })
+    setGeneration(null)
+    setCurrentIndex(0)
+    setComparedIndexes(new Set())
+  }
+
+  const changePeriod = (periodId) => {
+    const nextState = { ...catalogState, activePeriodId: periodId }
+    setCatalogState(nextState)
+    saveCatalogState(nextState)
+    resetWorkspace()
+    navigate('/', { replace: true })
+  }
+
+  const createPeriod = (copyCurrent) => {
+    const label = window.prompt('Nombre del nuevo periodo, por ejemplo: Enero-Julio 2027')?.trim()
+    if (!label) return
+    const id = `periodo-${Date.now()}`
+    const subjectsForPeriod = copyCurrent ? structuredClone(subjects) : []
+    const nextState = {
+      activePeriodId: id,
+      periods: [...catalogState.periods, { id, label, subjects: subjectsForPeriod }],
+    }
+    setCatalogState(nextState)
+    saveCatalogState(nextState)
+    resetWorkspace()
+    navigate('/', { replace: true })
+  }
+
+  const deletePeriod = () => {
+    if (catalogState.periods.length === 1 || !window.confirm(`¿Eliminar el periodo ${activePeriod.label}?`)) return
+    const periods = catalogState.periods.filter((period) => period.id !== activePeriod.id)
+    const nextState = { periods, activePeriodId: periods[0].id }
+    setCatalogState(nextState)
+    saveCatalogState(nextState)
+    resetWorkspace()
+    navigate('/', { replace: true })
   }
 
   const updateFilters = (nextFilters) => {
@@ -166,6 +216,13 @@ function App() {
     <>
       <Header />
       <main className="page-shell">
+        <AcademicPeriodSelector
+          periods={catalogState.periods}
+          activePeriodId={activePeriod.id}
+          onChange={changePeriod}
+          onCreate={createPeriod}
+          onDelete={deletePeriod}
+        />
         {isEditorRoute && editingId && !editingSubject && (
           <section className="panel editor-panel">
             <p className="step-label">Catálogo oficial</p>
@@ -188,28 +245,30 @@ function App() {
 
         {!isEditorRoute && (
           <>
-            <SubjectSelector
-              subjects={subjects}
-              selectedIds={selectedIds}
-              onToggle={toggleSubject}
-              onSelectAll={(visibleIds) => updateSelection(new Set([...selectedIds, ...visibleIds]))}
-              onClear={() => updateSelection(new Set())}
-              selectedCount={selectedSubjects.length}
-              totalCredits={totalCredits}
-              theoreticalCombinations={theoreticalCombinations}
-              onAdd={() => navigate('/edicion-materia')}
-              onEdit={(subject) => navigate(`/edicion-materia?id=${encodeURIComponent(subject.id)}`)}
-            />
+            <div className="setup-layout">
+              <SubjectSelector
+                subjects={subjects}
+                selectedIds={selectedIds}
+                onToggle={toggleSubject}
+                onSelectAll={(visibleIds) => updateSelection(new Set([...selectedIds, ...visibleIds]))}
+                onClear={() => updateSelection(new Set())}
+                selectedCount={selectedSubjects.length}
+                totalCredits={totalCredits}
+                theoreticalCombinations={theoreticalCombinations}
+                onAdd={() => navigate('/edicion-materia')}
+                onEdit={(subject) => navigate(`/edicion-materia?id=${encodeURIComponent(subject.id)}`)}
+              />
 
-            <ScheduleFilters
-              filters={filters}
-              professors={professors}
-              groupSections={groupSections}
-              selectedSubjects={selectedSubjects}
-              combinations={filteredCombinations}
-              onChange={updateFilters}
-              onReset={() => updateFilters({ ...emptyFilters })}
-            />
+              <ScheduleFilters
+                filters={filters}
+                professors={professors}
+                groupSections={groupSections}
+                selectedSubjects={selectedSubjects}
+                combinations={filteredCombinations}
+                onChange={updateFilters}
+                onReset={() => updateFilters({ ...emptyFilters })}
+              />
+            </div>
 
             <div className="generate-bar">
               <div>
