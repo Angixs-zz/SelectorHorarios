@@ -18,6 +18,8 @@ import {
   calculateTotalCredits,
 } from './utils/scheduleUtils.js'
 
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
+
 function App() {
   const [subjects, setSubjects] = useState(loadSubjects)
   const [selectedIds, setSelectedIds] = useState(new Set())
@@ -36,13 +38,14 @@ function App() {
   }, [])
 
   const navigate = (path, { replace = false } = {}) => {
-    window.history[replace ? 'replaceState' : 'pushState'](null, '', path)
-    setRoute(path)
+    const appPath = `${basePath}${path}`
+    window.history[replace ? 'replaceState' : 'pushState'](null, '', appPath)
+    setRoute(appPath)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const routeUrl = new URL(route, window.location.origin)
-  const isEditorRoute = routeUrl.pathname === '/edicion-materia'
+  const isEditorRoute = routeUrl.pathname === `${basePath}/edicion-materia`
   const editingId = routeUrl.searchParams.get('id')
   const editingSubject = editingId ? subjects.find((subject) => subject.id === editingId) : null
 

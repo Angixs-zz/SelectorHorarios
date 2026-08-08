@@ -49,6 +49,18 @@ npm run build
 
 Los archivos optimizados se generan en `dist/`. Se pueden revisar localmente con `npm run preview`.
 
+## Publicación en GitHub Pages
+
+El workflow `.github/workflows/deploy-pages.yml` publica automáticamente la aplicación cuando se envían cambios a `main`.
+
+En GitHub, abre `Settings > Pages` y selecciona `GitHub Actions` en `Build and deployment > Source`. Después de enviar los cambios, el sitio quedará disponible en:
+
+```text
+https://angixs-zz.github.io/SelectorHorarios/
+```
+
+El nombre `/SelectorHorarios/` también está configurado en `vite.config.js`. Si el repositorio cambia de nombre, hay que actualizar esa ruta.
+
 ## Estructura principal
 
 ```text
