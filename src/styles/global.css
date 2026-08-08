@@ -113,18 +113,6 @@ h3 {
   margin: 24px auto 56px;
 }
 
-.setup-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: start;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.setup-layout > .panel {
-  margin-bottom: 0;
-}
-
 .period-panel {
   display: flex;
   align-items: center;
@@ -1302,12 +1290,6 @@ footer {
   color: #c5d0d5;
   background: #11283c;
   font-size: 0.82rem;
-}
-
-@media (max-width: 1100px) {
-  .setup-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 900px) {

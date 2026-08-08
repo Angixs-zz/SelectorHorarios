@@ -245,30 +245,28 @@ function App() {
 
         {!isEditorRoute && (
           <>
-            <div className="setup-layout">
-              <SubjectSelector
-                subjects={subjects}
-                selectedIds={selectedIds}
-                onToggle={toggleSubject}
-                onSelectAll={(visibleIds) => updateSelection(new Set([...selectedIds, ...visibleIds]))}
-                onClear={() => updateSelection(new Set())}
-                selectedCount={selectedSubjects.length}
-                totalCredits={totalCredits}
-                theoreticalCombinations={theoreticalCombinations}
-                onAdd={() => navigate('/edicion-materia')}
-                onEdit={(subject) => navigate(`/edicion-materia?id=${encodeURIComponent(subject.id)}`)}
-              />
+            <SubjectSelector
+              subjects={subjects}
+              selectedIds={selectedIds}
+              onToggle={toggleSubject}
+              onSelectAll={(visibleIds) => updateSelection(new Set([...selectedIds, ...visibleIds]))}
+              onClear={() => updateSelection(new Set())}
+              selectedCount={selectedSubjects.length}
+              totalCredits={totalCredits}
+              theoreticalCombinations={theoreticalCombinations}
+              onAdd={() => navigate('/edicion-materia')}
+              onEdit={(subject) => navigate(`/edicion-materia?id=${encodeURIComponent(subject.id)}`)}
+            />
 
-              <ScheduleFilters
-                filters={filters}
-                professors={professors}
-                groupSections={groupSections}
-                selectedSubjects={selectedSubjects}
-                combinations={filteredCombinations}
-                onChange={updateFilters}
-                onReset={() => updateFilters({ ...emptyFilters })}
-              />
-            </div>
+            <ScheduleFilters
+              filters={filters}
+              professors={professors}
+              groupSections={groupSections}
+              selectedSubjects={selectedSubjects}
+              combinations={filteredCombinations}
+              onChange={updateFilters}
+              onReset={() => updateFilters({ ...emptyFilters })}
+            />
 
             <div className="generate-bar">
               <div>
