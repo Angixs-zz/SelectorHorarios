@@ -21,6 +21,7 @@ function copySubject(subject) {
   if (!subject) return emptySubject()
   return {
     ...subject,
+    creditos: subject.creditos ?? '',
     semestreCurricular: subject.semestreCurricular ?? '',
     grupos: subject.grupos.map((group) => ({
       ...group,

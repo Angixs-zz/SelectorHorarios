@@ -37,7 +37,7 @@ export function ScheduleSummary({ schedule }) {
                 <td>{getGroupLabel(grupo)}</td>
                 <td><span className={`status-badge ${grupo.estado}`}>{getGroupStatusLabel(grupo)}</span></td>
                 <td><span className="detail-line"><InfoIcon name="user" /> {grupo.docente || 'Docente por confirmar'}</span></td>
-                <td>{materia.creditos}</td>
+                <td>{materia.creditos ?? 'Por confirmar'}</td>
                 <td><span className="detail-line"><InfoIcon name="clock" />
                   {grupo.sesiones.map((session) =>
                     `${dayNames[session.dia]} ${session.inicio}-${session.fin}`,

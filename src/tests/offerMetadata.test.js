@@ -4,6 +4,7 @@ import { getGroupLabel, getScheduleWarnings } from '../utils/offerMetadata.js'
 describe('metadatos de la oferta', () => {
   it('no inventa un grupo administrativo pendiente', () => {
     expect(getGroupLabel({ grupo: null })).toBe('Grupo administrativo por confirmar')
+    expect(getGroupLabel({ grupo: null, etiquetaProvisional: 'Opción provisional 08:00-09:00' })).toBe('Opción provisional 08:00-09:00')
   })
 
   it('advierte cuando un horario usa planeación provisional', () => {

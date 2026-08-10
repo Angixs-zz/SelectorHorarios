@@ -32,31 +32,56 @@ export const planeacionProvisionalEspecialidad = createSubject(
   'especialidad-toma-decisiones-provisional',
   'ESP-TD-PENDIENTE',
   'Especialidad Toma de Decisiones (materias por confirmar)',
-  0,
-  7,
-  [{
-    id: 'especialidad-toma-decisiones-bloques-previstos',
+  null,
+  null,
+  [
+    ['08:00', '09:00'],
+    ['10:00', '11:00'],
+    ['19:00', '20:00'],
+  ].map(([inicio, fin]) => ({
+    id: `especialidad-toma-decisiones-opcion-${inicio.replace(':', '')}`,
     grupo: null,
+    etiquetaProvisional: `Opción provisional ${inicio}-${fin}`,
     semestreAdministrativo: null,
     estado: 'provisional',
     docente: null,
-    nota: 'Horario provisional - pendiente de confirmación por coordinación. Los días de lunes a viernes son un supuesto editable para simular choques.',
-    sesiones: [
-      ...weekdaysAt('08:00', '09:00'),
-      ...weekdaysAt('10:00', '11:00'),
-      ...weekdaysAt('19:00', '20:00'),
-    ].map(([inicio, fin, aula], index) => ({
-      dia: days[index % days.length],
+    nota: 'Grupo provisional - pendiente de confirmación por coordinación. Los días de lunes a viernes son un supuesto editable para simular choques.',
+    sesiones: weekdaysAt(inicio, fin).map(([, , aula], index) => ({
+      dia: days[index],
       inicio,
       fin,
       aula,
     })),
-  }],
+  })),
   {
     tipo: 'planeacion-provisional',
-    nota: 'Representa tres bloques previstos; las materias, grupos, docentes, aulas y días definitivos aún no están confirmados.',
+    nota: 'Representa tres opciones de grupo alternativas; la materia, etiquetas administrativas, docentes, aulas y días definitivos aún no están confirmados.',
   },
 )
+
+export const softwareTomaDecisionesCurricular = createSubject(
+  'software-toma-decisiones-dad-2605',
+  'DAD-2605',
+  'Software para Toma de Decisiones',
+  null,
+  7,
+  [],
+  {
+    nota: 'Materia curricular de 7.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
+  },
+)
+
+export const materiasCurricularesOctavoPendientes = [
+  createSubject('patrones-diseno-software', 'DAD-2601', 'Patrones de Diseño de Software', null, 8, [], {
+    nota: 'Materia curricular de 8.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
+  }),
+  createSubject('servicio-social', 'SESSC10', 'Servicio Social', null, 8, [], {
+    nota: 'Actividad curricular de 8.º semestre. Los datos administrativos están pendientes de confirmación.',
+  }),
+  createSubject('desarrollo-entornos-moviles', 'DAD-2602', 'Desarrollo en Entornos Móviles', null, 8, [], {
+    nota: 'Materia curricular de 8.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
+  }),
+]
 
 export const materiasIniciales = [
   createSubject('taller-investigacion-1', 'ACA0909', 'Taller de Investigación I', 4, 7, [
@@ -93,20 +118,22 @@ export const materiasIniciales = [
     createGroup('SCG1009', '8SB', 'RAFAEL PEREZ EVA', [['08:00', '09:00', 'I10'], ['08:00', '09:00', 'I10'], ['08:00', '09:00', 'I10'], ['08:00', '09:00', 'I10'], ['08:00', '10:00', 'I10']]),
     createGroup('SCG1009', '8SC', 'MARTINEZ NIETO ADELINA', [['07:00', '08:00', null], ['07:00', '08:00', null], ['07:00', '08:00', null], ['07:00', '09:00', null], ['07:00', '08:00', null]], { estado: 'por-verificar', nota: 'El horario fue descrito como aproximado; debe verificarse con la publicación administrativa.' }),
   ]),
+  softwareTomaDecisionesCurricular,
   createSubject('taller-investigacion-2', 'ACA0910', 'Taller de Investigación II', 4, 8, [
     createGroup('ACA0910', '8SU', null, [['13:00', '14:00', null], ['13:00', '14:00', null], [], ['13:00', '14:00', null], ['13:00', '14:00', null]]),
   ]),
-  createSubject('software-toma-decisiones', 'DSED2302', 'Desarrollo de Software para la Toma de Decisiones', 5, 8, [
+  ...materiasCurricularesOctavoPendientes,
+  createSubject('software-toma-decisiones', 'DSED2302', 'Desarrollo de Software para la Toma de Decisiones', 5, null, [
     createGroup('DSED2302', '8SB', 'DIAZ SARMIENTO BIBIANA', weekdaysAt('09:00', '10:00').map(([inicio, fin]) => [inicio, fin, 'I13']), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
     createGroup('DSED2302', '8SC', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('17:00', '18:00'), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
   ]),
-  createSubject('desarrollo-servicios-web', 'DSD2303', 'Desarrollo de Servicios Web', 5, 8, [
+  createSubject('desarrollo-servicios-web', 'DSD2303', 'Desarrollo de Servicios Web', 5, null, [
     createGroup('DSD2303', '8SC', null, weekdaysAt('16:00', '17:00')),
   ]),
   createSubject('administracion-redes', 'SCA1002', 'Administración de Redes', 4, 8, [
     createGroup('SCA1002', '8SU', 'ROBLEDO CABRERA OMAR', [[], ['09:00', '10:00', 'I11'], ['09:00', '10:00', 'I11'], ['09:00', '10:00', 'I11'], ['09:00', '10:00', 'I11']]),
   ]),
-  createSubject('programacion-logica-funcional', 'SCC1019', 'Programación Lógica y Funcional', 4, 7, [
+  createSubject('programacion-logica-funcional', 'SCC1019', 'Programación Lógica y Funcional', 4, 8, [
     createGroup('SCC1019', '7SA', 'MATADAMAS TORRES LORENZO ALEJANDRO', [['14:00', '15:00', 'CCOMP3'], ['14:00', '15:00', 'CCOMP3'], [], ['14:00', '15:00', 'CCOMP3'], ['14:00', '15:00', 'CCOMP3']]),
     createGroup('SCC1019', '7SB', 'MATADAMAS TORRES LORENZO ALEJANDRO', [['10:00', '11:00', 'I9'], ['10:00', '11:00', 'I9'], [], ['10:00', '11:00', 'I9'], ['10:00', '11:00', 'I9']]),
     createGroup('SCC1019', '7SC', 'ALONSO MARTINEZ CARLOS', [['16:00', '17:00', null], ['16:00', '17:00', null], ['16:00', '17:00', null], ['16:00', '17:00', null], []]),

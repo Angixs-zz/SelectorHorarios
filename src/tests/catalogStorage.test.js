@@ -21,7 +21,7 @@ describe('catálogos por periodo', () => {
     const state = loadCatalogState()
 
     expect(state.periods[0].label).toBe('Agosto-Diciembre 2026')
-    expect(state.schemaVersion).toBe(2)
+    expect(state.schemaVersion).toBe(4)
     expect(state.periods[0].subjects[0]).toMatchObject({
       id: 'personalizada',
       nombre: 'Materia personalizada',
@@ -30,8 +30,12 @@ describe('catálogos por periodo', () => {
     })
     expect(state.periods[0].subjects).toContainEqual(expect.objectContaining({
       id: 'especialidad-toma-decisiones-provisional',
-      semestreCurricular: 7,
+      semestreCurricular: null,
       tipo: 'planeacion-provisional',
+    }))
+    expect(state.periods[0].subjects).toContainEqual(expect.objectContaining({
+      clave: 'DAD-2605',
+      semestreCurricular: 7,
     }))
   })
 
@@ -48,7 +52,7 @@ describe('catálogos por periodo', () => {
 
     const loaded = loadCatalogState()
     expect(loaded.activePeriodId).toBe(state.activePeriodId)
-    expect(loaded.schemaVersion).toBe(2)
+    expect(loaded.schemaVersion).toBe(4)
     expect(loaded.periods[1]).toEqual(state.periods[1])
   })
 
@@ -80,5 +84,47 @@ describe('catálogos por periodo', () => {
       estado: 'oficial',
     })
     expect(group.sesiones[0]).toEqual({ dia: 'lunes', inicio: '13:00', fin: '14:00', aula: null })
+  })
+
+  it('corrige la clasificación curricular y los grupos provisionales sin sobrescribir horarios editados', () => {
+    storage.set('selector-horarios-catalogos-v1', JSON.stringify({
+      schemaVersion: 2,
+      activePeriodId: '2026-agosto-diciembre',
+      periods: [{
+        id: '2026-agosto-diciembre',
+        label: 'Agosto-Diciembre 2026',
+        subjects: [
+          {
+            id: 'conmutacion-redes',
+            clave: 'SCD1004',
+            semestreCurricular: 7,
+            grupos: [{
+              id: 'scd1004-7sd',
+              grupo: '7SD',
+              sesiones: [{ dia: 'lunes', inicio: '15:00', fin: '16:00', aula: null }],
+            }],
+          },
+          { id: 'programacion-logica-funcional', clave: 'SCC1019', semestreCurricular: 7, grupos: [] },
+          {
+            id: 'especialidad-toma-decisiones-provisional',
+            clave: 'ESP-TD-PENDIENTE',
+            semestreCurricular: 7,
+            grupos: [{ id: 'especialidad-toma-decisiones-bloques-previstos', grupo: null, sesiones: [] }],
+          },
+        ],
+      }],
+    }))
+
+    const subjects = loadCatalogState().periods[0].subjects
+    expect(subjects.find((subject) => subject.id === 'conmutacion-redes').grupos[0].sesiones[0]).toMatchObject({
+      inicio: '15:00',
+      fin: '16:00',
+    })
+    expect(subjects.find((subject) => subject.id === 'programacion-logica-funcional').semestreCurricular).toBe(8)
+    const provisional = subjects.find((subject) => subject.id === 'especialidad-toma-decisiones-provisional')
+    expect(provisional.semestreCurricular).toBeNull()
+    expect(provisional.grupos).toHaveLength(3)
+    expect(subjects.find((subject) => subject.clave === 'DAD-2605').semestreCurricular).toBe(7)
+    expect(subjects.filter((subject) => ['DAD-2601', 'SESSC10', 'DAD-2602'].includes(subject.clave))).toHaveLength(3)
   })
 })

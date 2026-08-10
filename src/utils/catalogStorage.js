@@ -1,9 +1,14 @@
-import { materiasIniciales, planeacionProvisionalEspecialidad } from '../data/materiasIniciales.js'
+import {
+  materiasIniciales,
+  materiasCurricularesOctavoPendientes,
+  planeacionProvisionalEspecialidad,
+  softwareTomaDecisionesCurricular,
+} from '../data/materiasIniciales.js'
 
 const LEGACY_STORAGE_KEY = 'selector-horarios-materias'
 const CATALOGS_STORAGE_KEY = 'selector-horarios-catalogos-v1'
 const DEFAULT_PERIOD_ID = '2026-agosto-diciembre'
-const SCHEMA_VERSION = 2
+const SCHEMA_VERSION = 4
 const placeholderRooms = new Set(['Ñ', 'Ñ1', 'Ñ2', 'BUUUU'])
 const curricularSemesters = {
   'taller-investigacion-1': 7,
@@ -12,11 +17,13 @@ const curricularSemesters = {
   'conmutacion-redes': 7,
   'lenguajes-automatas-2': 7,
   'gestion-proyectos-software': 7,
-  'programacion-logica-funcional': 7,
+  'software-toma-decisiones-dad-2605': 7,
   'taller-investigacion-2': 8,
-  'software-toma-decisiones': 8,
-  'desarrollo-servicios-web': 8,
+  'programacion-logica-funcional': 8,
   'administracion-redes': 8,
+  'patrones-diseno-software': 8,
+  'servicio-social': 8,
+  'desarrollo-entornos-moviles': 8,
 }
 
 const createDefaultState = (subjects = materiasIniciales) => ({
@@ -31,25 +38,62 @@ const createDefaultState = (subjects = materiasIniciales) => ({
 
 const cleanOptionalText = (value) => typeof value === 'string' && value.trim() ? value.trim() : null
 
-function normalizeSubject(subject, applyKnownCorrections) {
+const correctedSeventhSemesterIds = new Set([
+  'taller-investigacion-1',
+  'programacion-web',
+  'sistemas-programables',
+  'conmutacion-redes',
+  'lenguajes-automatas-2',
+  'gestion-proyectos-software',
+  'software-toma-decisiones-dad-2605',
+])
+
+const correctedEighthSemesterIds = new Set([
+  'programacion-logica-funcional',
+  'administracion-redes',
+  'patrones-diseno-software',
+  'servicio-social',
+  'desarrollo-entornos-moviles',
+  'taller-investigacion-2',
+])
+
+function normalizeSubject(subject, previousSchemaVersion) {
+  const applyV2Corrections = previousSchemaVersion < 2
+  let semestreCurricular = subject.semestreCurricular ?? curricularSemesters[subject.id] ?? null
+  if (previousSchemaVersion < 4) {
+    if (correctedSeventhSemesterIds.has(subject.id)) semestreCurricular = 7
+    if (correctedEighthSemesterIds.has(subject.id)) semestreCurricular = 8
+    if (
+      subject.id === planeacionProvisionalEspecialidad.id
+      || subject.id === 'software-toma-decisiones'
+      || subject.id === 'desarrollo-servicios-web'
+    ) semestreCurricular = null
+  }
+
+  const sourceGroups = previousSchemaVersion < 4
+    && subject.id === planeacionProvisionalEspecialidad.id
+    && subject.grupos?.some((group) => group.id === 'especialidad-toma-decisiones-bloques-previstos')
+    ? structuredClone(planeacionProvisionalEspecialidad.grupos)
+    : subject.grupos ?? []
+
   return {
     ...subject,
-    semestreCurricular: subject.semestreCurricular ?? curricularSemesters[subject.id] ?? null,
+    semestreCurricular,
     tipo: subject.tipo ?? 'materia',
     nota: cleanOptionalText(subject.nota),
-    grupos: (subject.grupos ?? []).map((group) => {
+    grupos: sourceGroups.map((group) => {
       const groupName = cleanOptionalText(group.grupo)?.toUpperCase() ?? null
-      const isCorrectedGroup = applyKnownCorrections && subject.id === 'conmutacion-redes' && groupName === '7SD'
+      const isCorrectedGroup = applyV2Corrections && subject.id === 'conmutacion-redes' && groupName === '7SD'
       return {
         ...group,
         grupo: groupName,
         semestreAdministrativo: group.semestreAdministrativo ?? (Number(groupName?.match(/^\d+/)?.[0]) || null),
-        estado: applyKnownCorrections && subject.id === 'gestion-proyectos-software' && groupName === '8SC'
+        estado: applyV2Corrections && subject.id === 'gestion-proyectos-software' && groupName === '8SC'
           ? 'por-verificar'
           : group.estado ?? 'oficial',
         alcance: group.alcance ?? (subject.id === 'software-toma-decisiones' ? 'oferta-administrativa-existente' : null),
         docente: cleanOptionalText(group.docente),
-        nota: cleanOptionalText(group.nota) ?? (applyKnownCorrections && subject.id === 'gestion-proyectos-software' && groupName === '8SC'
+        nota: cleanOptionalText(group.nota) ?? (applyV2Corrections && subject.id === 'gestion-proyectos-software' && groupName === '8SC'
           ? 'El horario fue descrito como aproximado; debe verificarse con la publicación administrativa.'
           : null),
         sesiones: (group.sesiones ?? []).map((session) => ({
@@ -64,11 +108,19 @@ function normalizeSubject(subject, applyKnownCorrections) {
 }
 
 function migrateState(state) {
-  const isSchemaUpgrade = (state.schemaVersion ?? 1) < SCHEMA_VERSION
+  const previousSchemaVersion = state.schemaVersion ?? 1
   const periods = state.periods.map((period) => {
-    const subjects = (period.subjects ?? []).map((subject) => normalizeSubject(subject, isSchemaUpgrade))
-    if (isSchemaUpgrade && period.id === DEFAULT_PERIOD_ID && !subjects.some((subject) => subject.id === planeacionProvisionalEspecialidad.id)) {
+    const subjects = (period.subjects ?? []).map((subject) => normalizeSubject(subject, previousSchemaVersion))
+    if (previousSchemaVersion < 2 && period.id === DEFAULT_PERIOD_ID && !subjects.some((subject) => subject.id === planeacionProvisionalEspecialidad.id)) {
       subjects.push(structuredClone(planeacionProvisionalEspecialidad))
+    }
+    if (previousSchemaVersion < 4 && period.id === DEFAULT_PERIOD_ID && !subjects.some((subject) => subject.id === softwareTomaDecisionesCurricular.id)) {
+      subjects.push(structuredClone(softwareTomaDecisionesCurricular))
+    }
+    if (previousSchemaVersion < 4 && period.id === DEFAULT_PERIOD_ID) {
+      for (const subject of materiasCurricularesOctavoPendientes) {
+        if (!subjects.some((current) => current.id === subject.id)) subjects.push(structuredClone(subject))
+      }
     }
     return { ...period, subjects }
   })

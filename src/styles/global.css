@@ -661,6 +661,21 @@ h3 {
   font-size: 0.84rem;
 }
 
+.subject-note,
+.no-offer-message {
+  margin: 10px 0 10px 34px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.no-offer-message {
+  margin-left: 0;
+  padding: 10px;
+  background: #f2f1ed;
+  border-left: 4px solid #aeb8bf;
+}
+
 .subject-card summary {
   cursor: pointer;
   font-weight: 600;
@@ -1858,6 +1873,11 @@ footer {
   color: #c7d2d8;
   background: #26343e;
   border-color: #43535e;
+}
+
+[data-theme='dark'] .no-offer-message {
+  background: #26343e;
+  border-color: #59717f;
 }
 
 [data-theme='dark'] .catalog-notice,

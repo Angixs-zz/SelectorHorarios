@@ -17,14 +17,16 @@ export function SubjectCard({ subject, selected, onToggle, onEdit }) {
         </span>
       </label>
       <div className="subject-meta">
-        <span>{subject.creditos} créditos</span>
+        <span>{subject.creditos == null ? 'Créditos por confirmar' : `${subject.creditos} créditos`}</span>
         <span>{subject.grupos.length} grupos</span>
         {subject.semestreCurricular && <span>{subject.semestreCurricular}° semestre curricular</span>}
         <button type="button" className="text-button icon-button" onClick={() => onEdit(subject)}><InfoIcon name="edit" /> Editar</button>
       </div>
+      {subject.nota && <p className="subject-note">{subject.nota}</p>}
       <details>
         <summary>Consultar grupos disponibles</summary>
         <div className="group-list">
+          {subject.grupos.length === 0 && <p className="no-offer-message">Sin grupo ni horario confirmado.</p>}
           {subject.grupos.map((group) => (
             <div key={group.id} className={`group-detail${isProvisionalGroup(group) ? ' is-provisional' : ''}`}>
               <strong>{getGroupLabel(group)}</strong>

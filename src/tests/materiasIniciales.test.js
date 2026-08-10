@@ -14,6 +14,44 @@ describe('oferta académica inicial', () => {
     expect(projects.grupos.every((group) => group.semestreAdministrativo === 8)).toBe(true)
   })
 
+  it('contiene exactamente las siete materias curriculares indicadas para séptimo', () => {
+    const seventhSemesterKeys = materiasIniciales
+      .filter((subject) => subject.semestreCurricular === 7)
+      .map((subject) => subject.clave)
+      .sort()
+
+    expect(seventhSemesterKeys).toEqual([
+      'ACA0909',
+      'AEB1055',
+      'DAD-2605',
+      'SCC1023',
+      'SCD1004',
+      'SCD1016',
+      'SCG1009',
+    ])
+    expect(subjectById('programacion-logica-funcional').semestreCurricular).toBe(8)
+    expect(planeacionProvisionalEspecialidad.semestreCurricular).toBeNull()
+    expect(subjectById('software-toma-decisiones-dad-2605').creditos).toBeNull()
+  })
+
+  it('contiene exactamente las seis materias curriculares únicas de octavo', () => {
+    const eighthSemesterKeys = materiasIniciales
+      .filter((subject) => subject.semestreCurricular === 8)
+      .map((subject) => subject.clave)
+      .sort()
+
+    expect(eighthSemesterKeys).toEqual([
+      'ACA0910',
+      'DAD-2601',
+      'DAD-2602',
+      'SCA1002',
+      'SCC1019',
+      'SESSC10',
+    ])
+    expect(subjectById('software-toma-decisiones').semestreCurricular).toBeNull()
+    expect(subjectById('desarrollo-servicios-web').semestreCurricular).toBeNull()
+  })
+
   it('guarda SCD1004 7SD de 13:00 a 14:00', () => {
     const group = subjectById('conmutacion-redes').grupos.find((current) => current.grupo === '7SD')
     expect(group.sesiones.every((session) => session.inicio === '13:00' && session.fin === '14:00')).toBe(true)
@@ -30,13 +68,14 @@ describe('oferta académica inicial', () => {
     const existing = subjectById('software-toma-decisiones')
     expect(existing.grupos.every((group) => group.alcance === 'oferta-administrativa-existente')).toBe(true)
 
-    const provisionalGroup = planeacionProvisionalEspecialidad.grupos[0]
-    expect(provisionalGroup.estado).toBe('provisional')
-    expect(provisionalGroup.grupo).toBeNull()
-    expect(new Set(provisionalGroup.sesiones.map((session) => `${session.inicio}-${session.fin}`))).toEqual(new Set([
+    const provisionalGroups = planeacionProvisionalEspecialidad.grupos
+    expect(provisionalGroups).toHaveLength(3)
+    expect(provisionalGroups.every((group) => group.estado === 'provisional' && group.grupo === null)).toBe(true)
+    expect(new Set(provisionalGroups.map((group) => `${group.sesiones[0].inicio}-${group.sesiones[0].fin}`))).toEqual(new Set([
       '08:00-09:00',
       '10:00-11:00',
       '19:00-20:00',
     ]))
+    expect(provisionalGroups.every((group) => new Set(group.sesiones.map((session) => `${session.inicio}-${session.fin}`)).size === 1)).toBe(true)
   })
 })

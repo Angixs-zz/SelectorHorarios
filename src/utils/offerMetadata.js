@@ -1,7 +1,7 @@
 export const PROVISIONAL_NOTICE = 'Horario provisional - pendiente de confirmación por coordinación.'
 
 export function getGroupLabel(group) {
-  return group.grupo || 'Grupo administrativo por confirmar'
+  return group.grupo || group.etiquetaProvisional || 'Grupo administrativo por confirmar'
 }
 
 export function isProvisionalGroup(group) {
