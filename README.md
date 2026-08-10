@@ -61,6 +61,12 @@ https://angixs-zz.github.io/SelectorHorarios/
 
 El nombre `/SelectorHorarios/` también está configurado en `vite.config.js`. Si el repositorio cambia de nombre, hay que actualizar esa ruta.
 
+## Instalación en el teléfono
+
+La aplicación es una PWA y puede instalarse desde su dirección de GitHub Pages. En Android, abre el menú del navegador y elige `Instalar aplicación` o `Añadir a pantalla principal`. En iPhone, abre la página en Safari, pulsa `Compartir` y elige `Añadir a pantalla de inicio`.
+
+Una vez abierta al menos una vez con conexión, sus recursos principales quedan disponibles para volver a usarla sin conexión. Los datos creados en la aplicación siguen guardándose localmente en ese navegador y dispositivo.
+
 ## Estructura principal
 
 ```text
