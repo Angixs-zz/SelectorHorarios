@@ -21,7 +21,7 @@ describe('catálogos por periodo', () => {
     const state = loadCatalogState()
 
     expect(state.periods[0].label).toBe('Agosto-Diciembre 2026')
-    expect(state.schemaVersion).toBe(5)
+    expect(state.schemaVersion).toBe(6)
     expect(state.periods[0].subjects[0]).toMatchObject({
       id: 'personalizada',
       nombre: 'Materia personalizada',
@@ -52,7 +52,7 @@ describe('catálogos por periodo', () => {
 
     const loaded = loadCatalogState()
     expect(loaded.activePeriodId).toBe(state.activePeriodId)
-    expect(loaded.schemaVersion).toBe(5)
+    expect(loaded.schemaVersion).toBe(6)
     expect(loaded.periods[1]).toEqual(state.periods[1])
   })
 
@@ -80,13 +80,13 @@ describe('catálogos por periodo', () => {
       id: 'scd1004-7sd',
       grupo: '7SD',
       semestreAdministrativo: 7,
-      docente: null,
+      docente: 'VALVERDE JARQUIN REYNA',
       estado: 'oficial',
     })
-    expect(group.sesiones[0]).toEqual({ dia: 'lunes', inicio: '13:00', fin: '14:00', aula: null })
+    expect(group.sesiones[0]).toEqual({ dia: 'lunes', inicio: '13:00', fin: '14:00', aula: 'cmc6' })
   })
 
-  it('corrige la clasificación curricular y los grupos provisionales sin sobrescribir horarios editados', () => {
+  it('corrige la clasificación curricular, la oferta oficial y los grupos provisionales', () => {
     storage.set('selector-horarios-catalogos-v1', JSON.stringify({
       schemaVersion: 2,
       activePeriodId: '2026-agosto-diciembre',
@@ -117,8 +117,9 @@ describe('catálogos por periodo', () => {
 
     const subjects = loadCatalogState().periods[0].subjects
     expect(subjects.find((subject) => subject.id === 'conmutacion-redes').grupos[0].sesiones[0]).toMatchObject({
-      inicio: '15:00',
-      fin: '16:00',
+      inicio: '13:00',
+      fin: '14:00',
+      aula: 'cmc6',
     })
     expect(subjects.find((subject) => subject.id === 'programacion-logica-funcional').semestreCurricular).toBe(8)
     const provisional = subjects.find((subject) => subject.id === 'especialidad-toma-decisiones-provisional')
@@ -157,7 +158,31 @@ describe('catálogos por periodo', () => {
     expect(subjects.some((subject) => subject.id === 'software-toma-decisiones')).toBe(false)
     expect(merged).toMatchObject({ clave: 'DAD-2605', creditos: 5, semestreCurricular: 7 })
     expect(merged.grupos.map((group) => group.grupo)).toEqual(['7SA', '7SB', '8SB', '8SC'])
-    expect(merged.grupos.find((group) => group.id === 'dad-2605-7sa').sesiones[0]).toMatchObject({ inicio: '08:30', fin: '09:30', aula: 'EDITADA' })
+    expect(merged.grupos.find((group) => group.id === 'dad-2605-7sa')).toMatchObject({ docente: 'LIMON CORDERO ROGELIO NOE' })
+    expect(merged.grupos.find((group) => group.id === 'dad-2605-7sa').sesiones[0]).toMatchObject({ inicio: '08:00', fin: '09:00', aula: 'cmc6' })
     expect(merged.grupos.find((group) => group.id === 'dsed2302-8sb').sesiones[0]).toMatchObject({ inicio: '09:30', fin: '10:30' })
+  })
+
+  it('actualiza la oferta guardada y agrega Patrones y Servicio Social', () => {
+    storage.set('selector-horarios-catalogos-v1', JSON.stringify({
+      schemaVersion: 5,
+      activePeriodId: '2026-agosto-diciembre',
+      periods: [{
+        id: '2026-agosto-diciembre',
+        label: 'Agosto-Diciembre 2026',
+        subjects: [
+          { id: 'programacion-web', clave: 'AEB1055', grupos: [{ id: 'aeb1055-7sb', grupo: '7SB', docente: 'DOCENTE ANTERIOR', sesiones: [] }] },
+          { id: 'patrones-diseno-software', clave: 'DAD-2601', creditos: null, grupos: [] },
+          { id: 'servicio-social', clave: 'SESSC10', creditos: null, grupos: [] },
+        ],
+      }],
+    }))
+
+    const subjects = loadCatalogState().periods[0].subjects
+    const webGroup = subjects.find((subject) => subject.id === 'programacion-web').grupos[0]
+    expect(webGroup).toMatchObject({ docente: 'LIMON CORDERO ROGELIO NOE' })
+    expect(webGroup.sesiones).toHaveLength(5)
+    expect(subjects.find((subject) => subject.id === 'patrones-diseno-software')).toMatchObject({ creditos: 5, grupos: [expect.objectContaining({ grupo: '7SD' })] })
+    expect(subjects.find((subject) => subject.id === 'servicio-social')).toMatchObject({ creditos: 10, grupos: [expect.objectContaining({ grupo: '8SS' })] })
   })
 })

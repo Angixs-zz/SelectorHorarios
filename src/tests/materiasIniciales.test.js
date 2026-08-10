@@ -55,6 +55,30 @@ describe('oferta académica inicial', () => {
   it('guarda SCD1004 7SD de 13:00 a 14:00', () => {
     const group = subjectById('conmutacion-redes').grupos.find((current) => current.grupo === '7SD')
     expect(group.sesiones.every((session) => session.inicio === '13:00' && session.fin === '14:00')).toBe(true)
+    expect(group).toMatchObject({ docente: 'VALVERDE JARQUIN REYNA' })
+    expect(group.sesiones.every((session) => session.aula === 'cmc6')).toBe(true)
+  })
+
+  it('actualiza docentes y días según la oferta publicada', () => {
+    const webGroups = subjectById('programacion-web').grupos
+    expect(webGroups.filter((group) => ['7SA', '7SB'].includes(group.grupo)).every((group) => group.docente === 'LIMON CORDERO ROGELIO NOE')).toBe(true)
+
+    const workshopGroups = subjectById('taller-investigacion-1').grupos
+    expect(workshopGroups.find((group) => group.grupo === '7SA').sesiones.map((session) => session.dia)).toEqual(['martes', 'miercoles', 'jueves', 'viernes'])
+    expect(workshopGroups.find((group) => group.grupo === '7SB').sesiones.every((session) => session.aula === 'I9')).toBe(true)
+    expect(subjectById('lenguajes-automatas-2').grupos.find((group) => group.grupo === '7SB').docente).toBe('VELAZQUEZ HERNANDEZ MARICARMEN MONTSERRAT')
+  })
+
+  it('agrega Patrones y Servicio Social con sus grupos publicados', () => {
+    const patterns = subjectById('patrones-diseno-software')
+    expect(patterns).toMatchObject({ clave: 'DAD-2601', creditos: 5, semestreCurricular: 8 })
+    expect(patterns.grupos[0]).toMatchObject({ grupo: '7SD', docente: 'BAÑOS SOLIS FRANCISCO RICARDO' })
+    expect(patterns.grupos[0].sesiones).toHaveLength(5)
+    expect(patterns.grupos[0].sesiones.every((session) => session.inicio === '10:00' && session.fin === '11:00' && session.aula === 'vs2')).toBe(true)
+
+    const socialService = subjectById('servicio-social')
+    expect(socialService).toMatchObject({ clave: 'SESSC10', creditos: 10 })
+    expect(socialService.grupos).toEqual([expect.objectContaining({ grupo: '8SS', sesiones: [] })])
   })
 
   it('no conserva aulas ficticias', () => {

@@ -8,7 +8,7 @@ import {
 const LEGACY_STORAGE_KEY = 'selector-horarios-materias'
 const CATALOGS_STORAGE_KEY = 'selector-horarios-catalogos-v1'
 const DEFAULT_PERIOD_ID = '2026-agosto-diciembre'
-const SCHEMA_VERSION = 5
+const SCHEMA_VERSION = 6
 const placeholderRooms = new Set(['Ñ', 'Ñ1', 'Ñ2', 'BUUUU'])
 const curricularSemesters = {
   'taller-investigacion-1': 7,
@@ -141,6 +141,41 @@ function mergeSoftwareTomaDecisiones(subjects, includeCurrentOffer) {
   return result
 }
 
+const v6CorrectedGroups = {
+  'taller-investigacion-1': ['aca0909-7sa', 'aca0909-7sb'],
+  'programacion-web': ['aeb1055-7sa', 'aeb1055-7sb'],
+  'conmutacion-redes': ['scd1004-7sd'],
+  'lenguajes-automatas-2': ['scd1016-7sb'],
+  'software-toma-decisiones-dad-2605': ['dad-2605-7sa'],
+  'patrones-diseno-software': ['dsd2301-7sd'],
+  'servicio-social': ['sessc10-8ss'],
+  'programacion-logica-funcional': ['scc1019-7sd'],
+}
+
+function applyV6OfferCorrections(subjects) {
+  const result = [...subjects]
+  for (const [subjectId, groupIds] of Object.entries(v6CorrectedGroups)) {
+    const template = materiasIniciales.find((subject) => subject.id === subjectId)
+    const subjectIndex = result.findIndex((subject) => subject.id === subjectId)
+    if (subjectIndex < 0) {
+      result.push(structuredClone(template))
+      continue
+    }
+
+    const current = result[subjectIndex]
+    const groups = new Map((current.grupos ?? []).map((group) => [group.id, group]))
+    for (const group of template.grupos.filter((candidate) => groupIds.includes(candidate.id))) {
+      groups.set(group.id, structuredClone(group))
+    }
+    result[subjectIndex] = {
+      ...current,
+      ...(subjectId === 'patrones-diseno-software' || subjectId === 'servicio-social' ? template : {}),
+      grupos: [...groups.values()],
+    }
+  }
+  return result
+}
+
 function migrateState(state) {
   const previousSchemaVersion = state.schemaVersion ?? 1
   const periods = state.periods.map((period) => {
@@ -158,6 +193,9 @@ function migrateState(state) {
     }
     if (previousSchemaVersion < 5) {
       subjects = mergeSoftwareTomaDecisiones(subjects, period.id === DEFAULT_PERIOD_ID)
+    }
+    if (previousSchemaVersion < 6 && period.id === DEFAULT_PERIOD_ID) {
+      subjects = applyV6OfferCorrections(subjects)
     }
     return { ...period, subjects }
   })

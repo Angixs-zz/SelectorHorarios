@@ -66,7 +66,7 @@ export const softwareTomaDecisionesCurricular = createSubject(
   5,
   7,
   [
-    createGroup('DAD-2605', '7SA', null, weekdaysAt('08:00', '09:00').map(([inicio, fin]) => [inicio, fin, 'cmc6'])),
+    createGroup('DAD-2605', '7SA', 'LIMON CORDERO ROGELIO NOE', weekdaysAt('08:00', '09:00').map(([inicio, fin]) => [inicio, fin, 'cmc6'])),
     createGroup('DAD-2605', '7SB', null, weekdaysAt('19:00', '20:00').map(([inicio, fin]) => [inicio, fin, 'I10'])),
     createGroup('DSED2302', '8SB', 'DIAZ SARMIENTO BIBIANA', weekdaysAt('09:00', '10:00').map(([inicio, fin]) => [inicio, fin, 'I13']), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
     createGroup('DSED2302', '8SC', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('17:00', '18:00'), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
@@ -77,11 +77,15 @@ export const softwareTomaDecisionesCurricular = createSubject(
 )
 
 export const materiasCurricularesOctavoPendientes = [
-  createSubject('patrones-diseno-software', 'DAD-2601', 'Patrones de Diseño de Software', null, 8, [], {
-    nota: 'Materia curricular de 8.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
+  createSubject('patrones-diseno-software', 'DAD-2601', 'Patrones de Diseño de Software', 5, 8, [
+    createGroup('DSD2301', '7SD', 'BAÑOS SOLIS FRANCISCO RICARDO', weekdaysAt('10:00', '11:00').map(([inicio, fin]) => [inicio, fin, 'vs2'])),
+  ], {
+    nota: 'La oferta administrativa publica esta materia con la clave DSD2301 y el nombre Diseño e Implementación de Software con Patrones.',
   }),
-  createSubject('servicio-social', 'SESSC10', 'Servicio Social', null, 8, [], {
-    nota: 'Actividad curricular de 8.º semestre. Los datos administrativos están pendientes de confirmación.',
+  createSubject('servicio-social', 'SESSC10', 'Servicio Social', 10, 8, [
+    createGroup('SESSC10', '8SS', null, []),
+  ], {
+    nota: 'Actividad curricular sin horario semanal publicado.',
   }),
   createSubject('desarrollo-entornos-moviles', 'DAD-2602', 'Desarrollo en Entornos Móviles', null, 8, [], {
     nota: 'Materia curricular de 8.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
@@ -90,14 +94,14 @@ export const materiasCurricularesOctavoPendientes = [
 
 export const materiasIniciales = [
   createSubject('taller-investigacion-1', 'ACA0909', 'Taller de Investigación I', 4, 7, [
-    createGroup('ACA0909', '7SA', null, [['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1'], []]),
-    createGroup('ACA0909', '7SB', null, [['09:00', '10:00', 'VS'], ['09:00', '10:00', 'VS'], ['09:00', '10:00', 'VS'], ['09:00', '10:00', 'VS'], []]),
+    createGroup('ACA0909', '7SA', null, [[], ['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1'], ['10:00', '11:00', 'I1']]),
+    createGroup('ACA0909', '7SB', null, [['09:00', '10:00', 'I9'], ['09:00', '10:00', 'I9'], ['09:00', '10:00', 'I9'], ['09:00', '10:00', 'I9'], []]),
     createGroup('ACA0909', '7SC', null, [['08:00', '09:00', 'I7'], ['08:00', '09:00', 'I7'], ['08:00', '09:00', 'I7'], ['08:00', '09:00', 'I7'], []]),
     createGroup('ACA0909', '7SD', null, [['11:00', '12:00', 'I1'], ['11:00', '12:00', 'I1'], ['11:00', '12:00', 'I1'], [], ['11:00', '12:00', 'I1']]),
   ]),
   createSubject('programacion-web', 'AEB1055', 'Programación Web', 5, 7, [
-    createGroup('AEB1055', '7SA', null, weekdaysAt('12:00', '13:00').map(([inicio, fin]) => [inicio, fin, 'I13'])),
-    createGroup('AEB1055', '7SB', 'BAÑOS SOLIS FRANCISCO RICARDO', weekdaysAt('10:00', '11:00').map(([inicio, fin]) => [inicio, fin, 'I7'])),
+    createGroup('AEB1055', '7SA', 'LIMON CORDERO ROGELIO NOE', weekdaysAt('12:00', '13:00').map(([inicio, fin]) => [inicio, fin, 'I13'])),
+    createGroup('AEB1055', '7SB', 'LIMON CORDERO ROGELIO NOE', weekdaysAt('10:00', '11:00').map(([inicio, fin]) => [inicio, fin, 'I7'])),
     createGroup('AEB1055', '7SC', null, weekdaysAt('18:00', '19:00')),
     createGroup('AEB1055', '7SD', null, weekdaysAt('19:00', '20:00').map(([inicio, fin]) => [inicio, fin, 'I6'])),
   ]),
@@ -110,11 +114,11 @@ export const materiasIniciales = [
     createGroup('SCD1004', '7SA', null, weekdaysAt('07:00', '08:00').map(([inicio, fin]) => [inicio, fin, 'I1'])),
     createGroup('SCD1004', '7SB', 'ROBLEDO CABRERA OMAR', weekdaysAt('11:00', '12:00').map(([inicio, fin]) => [inicio, fin, 'I13'])),
     createGroup('SCD1004', '7SC', 'JIMENEZ HALLA JOHANN FRANCISCO', weekdaysAt('15:00', '16:00').map(([inicio, fin]) => [inicio, fin, 'cmc6'])),
-    createGroup('SCD1004', '7SD', null, weekdaysAt('13:00', '14:00')),
+    createGroup('SCD1004', '7SD', 'VALVERDE JARQUIN REYNA', weekdaysAt('13:00', '14:00').map(([inicio, fin]) => [inicio, fin, 'cmc6'])),
   ]),
   createSubject('lenguajes-automatas-2', 'SCD1016', 'Lenguajes y Autómatas II', 5, 7, [
     createGroup('SCD1016', '7SA', 'BENITEZ QUECHA CLARIBEL', weekdaysAt('09:00', '10:00').map(([inicio, fin]) => [inicio, fin, 'I12'])),
-    createGroup('SCD1016', '7SB', null, weekdaysAt('11:00', '12:00').map(([inicio, fin]) => [inicio, fin, 'CCOMP2'])),
+    createGroup('SCD1016', '7SB', 'VELAZQUEZ HERNANDEZ MARICARMEN MONTSERRAT', weekdaysAt('11:00', '12:00').map(([inicio, fin]) => [inicio, fin, 'CCOMP2'])),
     createGroup('SCD1016', '7SC', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('16:00', '17:00').map(([inicio, fin]) => [inicio, fin, 'I14'])),
     createGroup('SCD1016', '7SD', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('14:00', '15:00')),
   ]),
@@ -138,7 +142,7 @@ export const materiasIniciales = [
     createGroup('SCC1019', '7SA', 'MATADAMAS TORRES LORENZO ALEJANDRO', [['14:00', '15:00', 'CCOMP3'], ['14:00', '15:00', 'CCOMP3'], [], ['14:00', '15:00', 'CCOMP3'], ['14:00', '15:00', 'CCOMP3']]),
     createGroup('SCC1019', '7SB', 'MATADAMAS TORRES LORENZO ALEJANDRO', [['10:00', '11:00', 'I9'], ['10:00', '11:00', 'I9'], [], ['10:00', '11:00', 'I9'], ['10:00', '11:00', 'I9']]),
     createGroup('SCC1019', '7SC', 'ALONSO MARTINEZ CARLOS', [['16:00', '17:00', null], ['16:00', '17:00', null], ['16:00', '17:00', null], ['16:00', '17:00', null], []]),
-    createGroup('SCC1019', '7SD', 'MATADAMAS TORRES LORENZO ALEJANDRO', [['15:00', '16:00', null], ['15:00', '16:00', null], ['15:00', '16:00', null], ['15:00', '16:00', null], []]),
+    createGroup('SCC1019', '7SD', null, [['15:00', '16:00', 'I14'], ['15:00', '16:00', 'I14'], ['15:00', '16:00', 'I14'], ['15:00', '16:00', 'I14'], []]),
   ]),
   planeacionProvisionalEspecialidad,
 ]
