@@ -180,13 +180,13 @@ function App() {
     window.setTimeout(() => {
       const start = performance.now()
       const result = generateValidSchedules(filteredSelectedSubjects)
-      const schedules = filterSchedulesByFreeTime(result.schedules, filters.maxDailyFreeMinutes)
+      const schedules = filterSchedulesByFreeTime(result.schedules, filters.maxGapMinutes)
       const elapsedMs = performance.now() - start
       setGeneration({
         ...result,
         schedules,
         schedulesBeforeFreeTimeFilter: result.schedules.length,
-        freeTimeFilterApplied: filters.maxDailyFreeMinutes !== '',
+        freeTimeFilterApplied: filters.maxGapMinutes !== '',
         elapsedMs,
         subjectCount: selectedSubjects.length,
         totalCredits,

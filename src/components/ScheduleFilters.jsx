@@ -89,18 +89,18 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
         </div>
 
         <div className="filter-card">
-          <h3><InfoIcon name="clock" /> Horas libres entre clases</h3>
+          <h3><InfoIcon name="clock" /> Hueco entre clases</h3>
           <label>
-            Máximo acumulado por día
-            <select value={filters.maxDailyFreeMinutes} onChange={(event) => update('maxDailyFreeMinutes', event.target.value)}>
+            Máximo por cada hueco
+            <select value={filters.maxGapMinutes} onChange={(event) => update('maxGapMinutes', event.target.value)}>
               <option value="">Sin límite</option>
-              <option value="0">Sin horas libres</option>
-              <option value="60">Hasta 1 hora</option>
-              <option value="120">Hasta 2 horas</option>
-              <option value="180">Hasta 3 horas</option>
+              <option value="0">Clases seguidas</option>
+              <option value="60">Hasta 1 hora entre clases</option>
+              <option value="120">Hasta 2 horas entre clases</option>
+              <option value="180">Hasta 3 horas entre clases</option>
             </select>
           </label>
-          <p>Suma únicamente los huecos entre la primera y la última clase de cada día.</p>
+          <p>Evalúa cada espacio por separado. Varias horas libres no se suman entre sí.</p>
         </div>
 
         <div className="filter-card">

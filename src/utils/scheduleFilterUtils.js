@@ -9,7 +9,7 @@ export const emptyFilters = {
   excludeUnassigned: false,
   groupSections: [],
   allowedGroupIds: {},
-  maxDailyFreeMinutes: '',
+  maxGapMinutes: '',
 }
 
 export function getGroupSection(groupName) {
@@ -49,9 +49,9 @@ export function filterSubjects(subjects, filters) {
   })
 }
 
-export function filterSchedulesByFreeTime(schedules, maxDailyFreeMinutes) {
-  if (maxDailyFreeMinutes === '') return schedules
-  const maximum = Number(maxDailyFreeMinutes)
+export function filterSchedulesByFreeTime(schedules, maxGapMinutes) {
+  if (maxGapMinutes === '') return schedules
+  const maximum = Number(maxGapMinutes)
 
   return schedules.filter((schedule) => {
     const sessionsByDay = new Map()
@@ -65,11 +65,11 @@ export function filterSchedulesByFreeTime(schedules, maxDailyFreeMinutes) {
 
     return [...sessionsByDay.values()].every((sessions) => {
       const ordered = sessions.sort((a, b) => timeToMinutes(a.inicio) - timeToMinutes(b.inicio))
-      let freeMinutes = 0
       for (let index = 1; index < ordered.length; index += 1) {
-        freeMinutes += Math.max(0, timeToMinutes(ordered[index].inicio) - timeToMinutes(ordered[index - 1].fin))
+        const gapMinutes = Math.max(0, timeToMinutes(ordered[index].inicio) - timeToMinutes(ordered[index - 1].fin))
+        if (gapMinutes > maximum) return false
       }
-      return freeMinutes <= maximum
+      return true
     })
   })
 }

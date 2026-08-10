@@ -96,7 +96,7 @@ describe('filtros de horarios', () => {
     expect(getGroupSection('8SU')).toBe('SU')
   })
 
-  it('filtra horarios por el máximo acumulado de horas libres de cada día', () => {
+  it('filtra horarios por la duración máxima de cada hueco', () => {
     const schedule = (secondStart) => [
       { grupo: group('primero', 'A', 'lunes', '08:00', '09:00') },
       { grupo: group('segundo', 'B', 'lunes', secondStart, '12:00') },
@@ -107,14 +107,14 @@ describe('filtros de horarios', () => {
     expect(filterSchedulesByFreeTime(schedules, '')).toBe(schedules)
   })
 
-  it('suma varios huecos del mismo día', () => {
+  it('no suma varios huecos del mismo día', () => {
     const schedule = [
       { grupo: group('primero', 'A', 'lunes', '08:00', '09:00') },
       { grupo: group('segundo', 'B', 'lunes', '09:30', '10:00') },
       { grupo: group('tercero', 'C', 'lunes', '10:30', '11:00') },
     ]
 
-    expect(filterSchedulesByFreeTime([schedule], '60')).toHaveLength(1)
-    expect(filterSchedulesByFreeTime([schedule], '30')).toHaveLength(0)
+    expect(filterSchedulesByFreeTime([schedule], '30')).toHaveLength(1)
+    expect(filterSchedulesByFreeTime([schedule], '29')).toHaveLength(0)
   })
 })
