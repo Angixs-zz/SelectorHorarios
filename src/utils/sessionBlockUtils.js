@@ -19,6 +19,6 @@ export function sessionsToBlocks(sessions, createId) {
 
 export function blocksToSessions(blocks) {
   return blocks.flatMap(({ id, dias, ...block }) =>
-    dias.map((dia) => ({ ...block, dia })),
+    dias.map((dia) => ({ ...block, aula: block.aula?.trim() || null, dia })),
   )
 }

@@ -1,4 +1,5 @@
 import { timeToMinutes } from '../utils/timeUtils.js'
+import { getGroupLabel, getScheduleWarnings } from '../utils/offerMetadata.js'
 
 const days = [
   ['lunes', 'Lunes'],
@@ -42,6 +43,7 @@ export async function exportSchedulePdf(schedule, scheduleNumber) {
   const timeWidth = 19
   const dayWidth = (gridWidth - timeWidth) / days.length
   const minuteHeight = gridHeight / (latest - earliest)
+  const warnings = getScheduleWarnings(schedule)
 
   doc.setProperties({ title: `Horario ${scheduleNumber}`, subject: 'Horario escolar generado' })
   doc.setFillColor(22, 50, 79)
@@ -102,17 +104,19 @@ export async function exportSchedulePdf(schedule, scheduleNumber) {
     doc.setTextColor(21, 34, 43)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(6.8)
-    doc.text(fitText(doc, `${session.materia.nombre} · ${session.grupo.grupo}`, width - 3), x + 1.5, y + 3.7)
+    doc.text(fitText(doc, `${session.materia.nombre} · ${getGroupLabel(session.grupo)}`, width - 3), x + 1.5, y + 3.7)
     doc.setFontSize(5.7)
-    doc.text(fitText(doc, session.grupo.docente || 'Profesor por asignar', width - 3), x + 1.5, y + 6.8)
+    doc.text(fitText(doc, session.grupo.docente || 'Docente por confirmar', width - 3), x + 1.5, y + 6.8)
     doc.setFont('helvetica', 'normal')
-    doc.text(fitText(doc, `${session.inicio}-${session.fin} · Aula ${session.aula || 'por asignar'}`, width - 3), x + 1.5, y + 9.8)
+    doc.text(fitText(doc, `${session.inicio}-${session.fin} · Aula ${session.aula || 'por confirmar'}`, width - 3), x + 1.5, y + 9.8)
   })
 
   doc.setTextColor(90, 100, 108)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(6.5)
-  doc.text('Selector de Horarios · Verifica los datos con la oferta oficial antes de inscribirte.', 10, 202)
+  doc.text(warnings.length > 0
+    ? `ATENCION: ${warnings.join(' ')}`
+    : 'Selector de Horarios · Verifica los datos con la oferta oficial antes de inscribirte.', 10, 202)
   doc.text(`Exportado: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - 10, 202, { align: 'right' })
   doc.save(`horario-opcion-${scheduleNumber}.pdf`)
 }

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { InfoIcon } from './InfoIcon.jsx'
 import { getSubjectTone } from '../utils/subjectTone.js'
+import { getGroupLabel, isProvisionalGroup } from '../utils/offerMetadata.js'
 import {
   analyzeSchedule,
   comparisonDayNames,
@@ -150,6 +151,7 @@ function ComparisonView({ schedules, onView, onRemove }) {
               </div>
             </div>
             <dl className="compare-card-metrics">
+              {analysis.hasProvisionalData && <div className="compare-provisional"><dt>Estado</dt><dd>Contiene información provisional</dd></div>}
               <div>
                 <dt>Hora de entrada</dt>
                 <dd>{analysis.entryTime ?? '—'}</dd>
@@ -209,7 +211,7 @@ function ComparisonView({ schedules, onView, onRemove }) {
                               >
                                 <span className="compare-range">{session.inicio}–{session.fin}</span>
                                 <span className="compare-subject-name">{session.materia.nombre}</span>
-                                <span className="compare-group-tag">G:{session.grupo.grupo}</span>
+                                <span className={`compare-group-tag${isProvisionalGroup(session.grupo) ? ' is-provisional' : ''}`}>{getGroupLabel(session.grupo)}</span>
                               </li>
                             ))}
                           </ul>

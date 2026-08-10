@@ -57,6 +57,7 @@ describe('analyzeSchedule', () => {
     expect(analysis.daysWithClass).toBe(2)
     expect(analysis.totalClassMinutes).toBe(240)
     expect(analysis.totalFreeMinutes).toBe(180)
+    expect(analysis.hasProvisionalData).toBe(false)
   })
 })
 

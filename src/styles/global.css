@@ -477,12 +477,12 @@ h3 {
 }
 
 .subject-fields {
-  grid-template-columns: minmax(130px, 0.7fr) minmax(260px, 2fr) minmax(100px, 0.5fr);
+  grid-template-columns: minmax(130px, 0.7fr) minmax(260px, 2fr) repeat(2, minmax(100px, 0.5fr));
 }
 
 .group-fields {
   align-items: end;
-  grid-template-columns: minmax(110px, 0.7fr) minmax(220px, 2fr) auto;
+  grid-template-columns: minmax(150px, 1fr) minmax(130px, 0.7fr) minmax(145px, 0.8fr) minmax(220px, 1.5fr) auto;
 }
 
 .editor-panel label {
@@ -657,6 +657,43 @@ h3 {
 
 .group-detail .detail-line {
   color: #43515c;
+}
+
+.group-detail.is-provisional {
+  padding: 12px;
+  background: #fff7df;
+  border-left: 4px dashed #ad7827;
+}
+
+.status-badge,
+.provisional-tag {
+  width: fit-content;
+  padding: 3px 7px;
+  color: #294b47;
+  background: #e1f0eb;
+  border: 1px solid #79a096;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.status-badge.provisional,
+.provisional-tag {
+  color: #704a0d;
+  background: #fff2c9;
+  border-color: #cf9d46;
+}
+
+.status-badge.por-verificar {
+  color: #704a0d;
+  background: #fff7df;
+  border-color: #cf9d46;
+}
+
+.provisional-copy {
+  color: #704a0d;
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 .group-detail .info-icon,
@@ -1159,6 +1196,26 @@ h3 {
   box-shadow: 0 5px 12px rgba(22, 50, 79, 0.16);
 }
 
+.class-block.is-provisional {
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.34) 0 8px, transparent 8px 16px);
+  border-style: dashed;
+  border-color: #ad7827;
+}
+
+.schedule-warning {
+  margin: 0 0 14px;
+  padding: 12px 15px;
+  color: #704a0d;
+  background: #fff2c9;
+  border-left: 5px solid #ad7827;
+  font-weight: 800;
+}
+
+.class-block .provisional-tag {
+  display: inline-block;
+  margin-top: 5px;
+}
+
 .class-block strong,
 .class-block span {
   display: block;
@@ -1575,6 +1632,16 @@ footer {
   padding: 7px 9px;
   background: white;
   border-radius: 5px;
+}
+
+.compare-card-metrics .compare-provisional {
+  color: #704a0d;
+  background: #fff2c9;
+}
+
+.compare-group-tag.is-provisional {
+  background: #8b611f;
+  border: 1px dashed #fff2c9;
 }
 
 .compare-card-metrics dt {

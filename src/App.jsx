@@ -225,7 +225,7 @@ function App() {
         />
         {isEditorRoute && editingId && !editingSubject && (
           <section className="panel editor-panel">
-            <p className="step-label">Catálogo oficial</p>
+            <p className="step-label">Catálogo académico</p>
             <h2>Materia no encontrada</h2>
             <p>La materia pudo haber sido eliminada o la dirección ya no es válida.</p>
             <button type="button" className="button secondary" onClick={() => navigate('/', { replace: true })}>Volver al inicio</button>

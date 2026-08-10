@@ -14,15 +14,19 @@ const days = [
 
 const createId = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
 const newTimeBlock = () => ({ id: createId(), dias: [], inicio: '07:00', fin: '08:00', aula: '' })
-const newGroup = () => ({ id: createId(), grupo: '', docente: '', sesiones: [newTimeBlock()] })
-const emptySubject = () => ({ id: createId(), clave: '', nombre: '', creditos: 0, grupos: [newGroup()] })
+const newGroup = () => ({ id: createId(), grupo: '', semestreAdministrativo: '', estado: 'oficial', docente: '', nota: null, sesiones: [newTimeBlock()] })
+const emptySubject = () => ({ id: createId(), clave: '', nombre: '', creditos: 0, semestreCurricular: 7, tipo: 'materia', nota: null, grupos: [newGroup()] })
 
 function copySubject(subject) {
   if (!subject) return emptySubject()
   return {
     ...subject,
+    semestreCurricular: subject.semestreCurricular ?? '',
     grupos: subject.grupos.map((group) => ({
       ...group,
+      grupo: group.grupo ?? '',
+      semestreAdministrativo: group.semestreAdministrativo ?? '',
+      docente: group.docente ?? '',
       sesiones: sessionsToBlocks(group.sesiones, createId),
     })),
   }
@@ -95,7 +99,8 @@ export function SubjectEditor({ subject, subjects, onSave, onCancel, onDelete })
       setError('Cada grupo necesita al menos un bloque horario con uno o más días seleccionados.')
       return
     }
-    if (new Set(draft.grupos.map((group) => group.grupo.trim().toLowerCase())).size !== draft.grupos.length) {
+    const namedGroups = draft.grupos.map((group) => group.grupo.trim().toLowerCase()).filter(Boolean)
+    if (new Set(namedGroups).size !== namedGroups.length) {
       setError('No puede haber dos grupos con el mismo nombre en una materia.')
       return
     }
@@ -113,11 +118,13 @@ export function SubjectEditor({ subject, subjects, onSave, onCancel, onDelete })
       clave: normalizedKey,
       nombre: draft.nombre.trim(),
       creditos: Number(draft.creditos),
+      semestreCurricular: Number(draft.semestreCurricular),
       grupos: draft.grupos.map((group) => ({
         ...group,
-        grupo: group.grupo.trim().toUpperCase(),
-        docente: group.docente.trim(),
-        sesiones: blocksToSessions(group.sesiones).map((session) => ({ ...session, aula: session.aula.trim() })),
+        grupo: group.grupo.trim().toUpperCase() || null,
+        semestreAdministrativo: Number(group.semestreAdministrativo) || null,
+        docente: group.docente.trim() || null,
+        sesiones: blocksToSessions(group.sesiones),
       })),
     })
   }
@@ -126,7 +133,7 @@ export function SubjectEditor({ subject, subjects, onSave, onCancel, onDelete })
     <section className="panel editor-panel" aria-labelledby="editor-heading">
       <div className="section-heading">
         <div>
-          <p className="step-label">Catálogo oficial</p>
+          <p className="step-label">Catálogo académico</p>
           <h2 id="editor-heading">{subject ? 'Editar materia y grupos' : 'Agregar materia'}</h2>
         </div>
         <button type="button" className="button ghost" onClick={onCancel}>Cancelar</button>
@@ -137,6 +144,7 @@ export function SubjectEditor({ subject, subjects, onSave, onCancel, onDelete })
           <label>Clave<input required value={draft.clave} onChange={(event) => updateSubject('clave', event.target.value)} placeholder="Ej. AEB1055" /></label>
           <label>Nombre de la materia<input required value={draft.nombre} onChange={(event) => updateSubject('nombre', event.target.value)} /></label>
           <label>Créditos<input required min="0" type="number" value={draft.creditos} onChange={(event) => updateSubject('creditos', event.target.value)} /></label>
+          <label>Semestre curricular<input required min="1" type="number" value={draft.semestreCurricular} onChange={(event) => updateSubject('semestreCurricular', event.target.value)} /></label>
         </div>
 
         <div className="editor-heading-row">
@@ -149,8 +157,10 @@ export function SubjectEditor({ subject, subjects, onSave, onCancel, onDelete })
             <fieldset className="group-editor" key={group.id}>
               <legend>Grupo {groupIndex + 1}</legend>
               <div className="group-fields">
-                <label>Grupo<input required value={group.grupo} onChange={(event) => updateGroup(group.id, 'grupo', event.target.value)} placeholder="Ej. 7SA" /></label>
-                <label><span className="label-with-icon"><InfoIcon name="user" /> Profesor</span><input value={group.docente} onChange={(event) => updateGroup(group.id, 'docente', event.target.value)} placeholder="Por asignar" /></label>
+                <label>Grupo administrativo<input value={group.grupo} onChange={(event) => updateGroup(group.id, 'grupo', event.target.value)} placeholder="Ej. 8SA o pendiente" /></label>
+                <label>Semestre administrativo<input min="1" type="number" value={group.semestreAdministrativo} onChange={(event) => updateGroup(group.id, 'semestreAdministrativo', event.target.value)} placeholder="Pendiente" /></label>
+                <label>Estado<select value={group.estado} onChange={(event) => updateGroup(group.id, 'estado', event.target.value)}><option value="oficial">Publicado</option><option value="por-verificar">Publicado, por verificar</option><option value="provisional">Provisional</option></select></label>
+                <label><span className="label-with-icon"><InfoIcon name="user" /> Docente</span><input value={group.docente} onChange={(event) => updateGroup(group.id, 'docente', event.target.value)} placeholder="Por confirmar" /></label>
                 <button type="button" className="text-button danger icon-button" onClick={() => removeGroup(group.id)}><InfoIcon name="trash" /> Eliminar grupo</button>
               </div>
 

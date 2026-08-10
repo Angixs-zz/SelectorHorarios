@@ -1,4 +1,5 @@
 import { InfoIcon } from './InfoIcon.jsx'
+import { getGroupLabel, getGroupStatusLabel } from '../utils/offerMetadata.js'
 
 const dayNames = {
   lunes: 'Lun',
@@ -18,7 +19,9 @@ export function ScheduleSummary({ schedule }) {
             <tr>
               <th>Clave</th>
               <th>Materia</th>
+              <th>Semestre curricular</th>
               <th>Grupo</th>
+              <th>Estado</th>
               <th>Docente</th>
               <th>Créditos</th>
               <th>Sesiones</th>
@@ -30,15 +33,17 @@ export function ScheduleSummary({ schedule }) {
               <tr key={materia.id}>
                 <td><strong>{materia.clave}</strong></td>
                 <td>{materia.nombre}</td>
-                <td>{grupo.grupo}</td>
-                <td><span className="detail-line"><InfoIcon name="user" /> {grupo.docente || 'Por asignar'}</span></td>
+                <td>{materia.semestreCurricular ? `${materia.semestreCurricular}°` : 'Por confirmar'}</td>
+                <td>{getGroupLabel(grupo)}</td>
+                <td><span className={`status-badge ${grupo.estado}`}>{getGroupStatusLabel(grupo)}</span></td>
+                <td><span className="detail-line"><InfoIcon name="user" /> {grupo.docente || 'Docente por confirmar'}</span></td>
                 <td>{materia.creditos}</td>
                 <td><span className="detail-line"><InfoIcon name="clock" />
                   {grupo.sesiones.map((session) =>
                     `${dayNames[session.dia]} ${session.inicio}-${session.fin}`,
                   ).join(' · ')}
                 </span></td>
-                <td><span className="detail-line"><InfoIcon name="room" /> {[...new Set(grupo.sesiones.map((session) => session.aula || 'Por asignar'))].join(', ')}</span></td>
+                <td><span className="detail-line"><InfoIcon name="room" /> {[...new Set(grupo.sesiones.map((session) => session.aula || 'Aula por confirmar'))].join(', ')}</span></td>
               </tr>
             ))}
           </tbody>

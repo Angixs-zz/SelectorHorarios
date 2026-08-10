@@ -1,4 +1,5 @@
 import { InfoIcon } from './InfoIcon.jsx'
+import { getGroupLabel, isProvisionalGroup } from '../utils/offerMetadata.js'
 
 const days = [
   ['lunes', 'Lun'],
@@ -71,7 +72,7 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
               </label>
             ))}
           </div>
-          <p>Seleccionar SA acepta tanto 7SA como 8SA y permite mezclar semestres.</p>
+          <p>La familia usa la etiqueta administrativa; el semestre curricular se filtra en el catálogo.</p>
         </div>
 
         <div className="filter-card">
@@ -146,7 +147,8 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
                     return (
                       <label className={checked ? 'is-checked' : ''} key={group.id}>
                         <input type="checkbox" checked={checked} onChange={() => toggleGroup(subject.id, group.id)} />
-                        <strong>Grupo {group.grupo}</strong>
+                        <strong>{getGroupLabel(group)}</strong>
+                        {isProvisionalGroup(group) && <span className="status-badge provisional">Provisional</span>}
                         <span className="group-session-list">
                           {group.sesiones.map((session) => (
                             <span key={`${session.dia}-${session.inicio}-${session.fin}`}>
@@ -154,7 +156,7 @@ export function ScheduleFilters({ filters, professors, groupSections, selectedSu
                             </span>
                           ))}
                         </span>
-                        <small>{group.docente || 'Profesor por asignar'}</small>
+                        <small>{group.docente || 'Docente por confirmar'}</small>
                       </label>
                     )
                   })}

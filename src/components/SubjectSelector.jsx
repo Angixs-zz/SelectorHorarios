@@ -16,9 +16,10 @@ export function SubjectSelector({
   const [search, setSearch] = useState('')
   const [semester, setSemester] = useState('all')
   const normalizedSearch = search.trim().toLocaleLowerCase('es')
+  const semesters = [...new Set(subjects.map((subject) => subject.semestreCurricular).filter(Boolean))].sort((a, b) => a - b)
   const visibleSubjects = subjects.filter((subject) => {
     const matchesSearch = !normalizedSearch || `${subject.clave} ${subject.nombre}`.toLocaleLowerCase('es').includes(normalizedSearch)
-    const matchesSemester = semester === 'all' || subject.grupos.some((group) => group.grupo.startsWith(semester))
+    const matchesSemester = semester === 'all' || String(subject.semestreCurricular) === semester
     return matchesSearch && matchesSemester
   })
 
@@ -43,13 +44,13 @@ export function SubjectSelector({
       </div>
 
       <p className="catalog-notice">
-        Combina libremente materias de séptimo y octavo. Tu selección se conserva al cambiar de semestre.
+        El semestre curricular se muestra por separado del grupo publicado por administración. Tu selección se conserva al cambiar de semestre.
       </p>
 
       <div className="catalog-toolbar">
         <label className="subject-search">Buscar materia<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Clave o nombre" /></label>
         <div className="semester-switch" aria-label="Filtrar materias por semestre">
-          {[['all', 'Todas'], ['7', '7° semestre'], ['8', '8° semestre']].map(([value, label]) => (
+          {[['all', 'Todas'], ...semesters.map((value) => [String(value), `${value}° semestre`])].map(([value, label]) => (
             <button type="button" className={semester === value ? 'is-active' : ''} onClick={() => setSemester(value)} key={value}>{label}</button>
           ))}
         </div>

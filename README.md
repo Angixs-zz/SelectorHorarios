@@ -95,7 +95,13 @@ Las materias y sus grupos se encuentran en:
 src/data/materiasIniciales.js
 ```
 
-**Advertencia:** los horarios y aulas actuales son datos de demostración, no información oficial. Los docentes se dejaron vacíos deliberadamente. Sustituye las sesiones de ese archivo por los horarios oficiales antes de usar la aplicación para tomar decisiones académicas.
+El modelo separa `semestreCurricular` de la etiqueta administrativa del grupo. Por ejemplo, Sistemas Programables puede tener `semestreCurricular: 7` y conservar el grupo publicado `8SA` con `semestreAdministrativo: 8`.
+
+Cada grupo tiene un `estado` (`oficial` o `provisional`). Los docentes y aulas desconocidos se guardan como `null`; la interfaz los presenta como datos por confirmar. La oferta publicada de `DSED2302` se conserva con `alcance: 'oferta-administrativa-existente'` porque no está confirmada para alumnos de nuevo ingreso a la especialidad.
+
+La entrada `especialidad-toma-decisiones-provisional` centraliza los bloques previstos `08:00-09:00`, `10:00-11:00` y `19:00-20:00`. No les asigna materia, grupo, docente ni aula. Para poder simular choques reserva provisionalmente lunes a viernes; ese supuesto y cada bloque pueden editarse desde el editor de materias cuando coordinación confirme los días y datos definitivos.
+
+Los datos marcados como provisionales sirven para generar horarios, pero producen una advertencia visible en la cuadrícula, el resumen comparativo y el PDF. Verifica siempre el resultado con la publicación escolar antes de inscribirte.
 
 ## Primera etapa
 

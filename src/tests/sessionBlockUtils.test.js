@@ -30,4 +30,11 @@ describe('bloques de días y horarios', () => {
 
     expect(sessionsToBlocks(sessions, () => 'block').length).toBe(2)
   })
+
+  it('convierte un aula vacía del formulario en null', () => {
+    const blocks = [{ id: 'block', dias: ['lunes'], inicio: '08:00', fin: '09:00', aula: '  ' }]
+    expect(blocksToSessions(blocks)).toEqual([
+      { dia: 'lunes', inicio: '08:00', fin: '09:00', aula: null },
+    ])
+  })
 })

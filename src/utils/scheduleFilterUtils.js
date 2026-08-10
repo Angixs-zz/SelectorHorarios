@@ -13,7 +13,7 @@ export const emptyFilters = {
 }
 
 export function getGroupSection(groupName) {
-  return groupName.replace(/^\d+/, '').toUpperCase()
+  return groupName?.replace(/^\d+/, '').toUpperCase() || 'PENDIENTE'
 }
 
 export function filterSubjects(subjects, filters) {

@@ -1,4 +1,5 @@
 import { minutesToTime, timeToMinutes } from './timeUtils.js'
+import { scheduleHasProvisionalData } from './offerMetadata.js'
 
 export const comparisonDays = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes']
 
@@ -77,6 +78,7 @@ export function analyzeSchedule(schedule) {
     exitTime: latestExit === -Infinity ? null : minutesToTime(latestExit),
     totalClassMinutes,
     totalFreeMinutes,
+    hasProvisionalData: scheduleHasProvisionalData(schedule),
   }
 }
 
