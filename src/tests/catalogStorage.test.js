@@ -21,7 +21,7 @@ describe('catálogos por periodo', () => {
     const state = loadCatalogState()
 
     expect(state.periods[0].label).toBe('Agosto-Diciembre 2026')
-    expect(state.schemaVersion).toBe(4)
+    expect(state.schemaVersion).toBe(5)
     expect(state.periods[0].subjects[0]).toMatchObject({
       id: 'personalizada',
       nombre: 'Materia personalizada',
@@ -52,7 +52,7 @@ describe('catálogos por periodo', () => {
 
     const loaded = loadCatalogState()
     expect(loaded.activePeriodId).toBe(state.activePeriodId)
-    expect(loaded.schemaVersion).toBe(4)
+    expect(loaded.schemaVersion).toBe(5)
     expect(loaded.periods[1]).toEqual(state.periods[1])
   })
 
@@ -126,5 +126,38 @@ describe('catálogos por periodo', () => {
     expect(provisional.grupos).toHaveLength(3)
     expect(subjects.find((subject) => subject.clave === 'DAD-2605').semestreCurricular).toBe(7)
     expect(subjects.filter((subject) => ['DAD-2601', 'SESSC10', 'DAD-2602'].includes(subject.clave))).toHaveLength(3)
+  })
+
+  it('fusiona DSED2302 con DAD-2605 y conserva grupos editados', () => {
+    storage.set('selector-horarios-catalogos-v1', JSON.stringify({
+      schemaVersion: 4,
+      activePeriodId: '2026-agosto-diciembre',
+      periods: [{
+        id: '2026-agosto-diciembre',
+        label: 'Agosto-Diciembre 2026',
+        subjects: [
+          {
+            id: 'software-toma-decisiones-dad-2605',
+            clave: 'DAD-2605',
+            nombre: 'Software para Toma de Decisiones',
+            grupos: [{ id: 'dad-2605-7sa', grupo: '7SA', sesiones: [{ dia: 'lunes', inicio: '08:30', fin: '09:30', aula: 'EDITADA' }] }],
+          },
+          {
+            id: 'software-toma-decisiones',
+            clave: 'DSED2302',
+            nombre: 'Desarrollo de Software para la Toma de Decisiones',
+            grupos: [{ id: 'dsed2302-8sb', grupo: '8SB', sesiones: [{ dia: 'lunes', inicio: '09:30', fin: '10:30', aula: 'I13' }] }],
+          },
+        ],
+      }],
+    }))
+
+    const subjects = loadCatalogState().periods[0].subjects
+    const merged = subjects.find((subject) => subject.id === 'software-toma-decisiones-dad-2605')
+    expect(subjects.some((subject) => subject.id === 'software-toma-decisiones')).toBe(false)
+    expect(merged).toMatchObject({ clave: 'DAD-2605', creditos: 5, semestreCurricular: 7 })
+    expect(merged.grupos.map((group) => group.grupo)).toEqual(['7SA', '7SB', '8SB', '8SC'])
+    expect(merged.grupos.find((group) => group.id === 'dad-2605-7sa').sesiones[0]).toMatchObject({ inicio: '08:30', fin: '09:30', aula: 'EDITADA' })
+    expect(merged.grupos.find((group) => group.id === 'dsed2302-8sb').sesiones[0]).toMatchObject({ inicio: '09:30', fin: '10:30' })
   })
 })

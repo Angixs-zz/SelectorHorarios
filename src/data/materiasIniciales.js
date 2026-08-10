@@ -63,11 +63,16 @@ export const softwareTomaDecisionesCurricular = createSubject(
   'software-toma-decisiones-dad-2605',
   'DAD-2605',
   'Software para Toma de Decisiones',
-  null,
+  5,
   7,
-  [],
+  [
+    createGroup('DAD-2605', '7SA', null, weekdaysAt('08:00', '09:00').map(([inicio, fin]) => [inicio, fin, 'cmc6'])),
+    createGroup('DAD-2605', '7SB', null, weekdaysAt('19:00', '20:00').map(([inicio, fin]) => [inicio, fin, 'I10'])),
+    createGroup('DSED2302', '8SB', 'DIAZ SARMIENTO BIBIANA', weekdaysAt('09:00', '10:00').map(([inicio, fin]) => [inicio, fin, 'I13']), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
+    createGroup('DSED2302', '8SC', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('17:00', '18:00'), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
+  ],
   {
-    nota: 'Materia curricular de 7.º semestre. El grupo, horario, docente, aula y créditos están pendientes de confirmación.',
+    nota: 'La oferta administrativa también publica esta materia con la clave DSED2302 y el nombre Desarrollo de Software para la Toma de Decisiones.',
   },
 )
 
@@ -123,10 +128,6 @@ export const materiasIniciales = [
     createGroup('ACA0910', '8SU', null, [['13:00', '14:00', null], ['13:00', '14:00', null], [], ['13:00', '14:00', null], ['13:00', '14:00', null]]),
   ]),
   ...materiasCurricularesOctavoPendientes,
-  createSubject('software-toma-decisiones', 'DSED2302', 'Desarrollo de Software para la Toma de Decisiones', 5, null, [
-    createGroup('DSED2302', '8SB', 'DIAZ SARMIENTO BIBIANA', weekdaysAt('09:00', '10:00').map(([inicio, fin]) => [inicio, fin, 'I13']), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
-    createGroup('DSED2302', '8SC', 'ALONSO HERNANDEZ LUIS ALBERTO', weekdaysAt('17:00', '18:00'), { alcance: 'oferta-administrativa-existente', nota: 'Oferta administrativa existente; no confirmada para alumnos de nuevo ingreso a la especialidad.' }),
-  ]),
   createSubject('desarrollo-servicios-web', 'DSD2303', 'Desarrollo de Servicios Web', 5, null, [
     createGroup('DSD2303', '8SC', null, weekdaysAt('16:00', '17:00')),
   ]),

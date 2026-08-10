@@ -8,7 +8,7 @@ import {
 const LEGACY_STORAGE_KEY = 'selector-horarios-materias'
 const CATALOGS_STORAGE_KEY = 'selector-horarios-catalogos-v1'
 const DEFAULT_PERIOD_ID = '2026-agosto-diciembre'
-const SCHEMA_VERSION = 4
+const SCHEMA_VERSION = 5
 const placeholderRooms = new Set(['Ñ', 'Ñ1', 'Ñ2', 'BUUUU'])
 const curricularSemesters = {
   'taller-investigacion-1': 7,
@@ -107,10 +107,44 @@ function normalizeSubject(subject, previousSchemaVersion) {
   }
 }
 
+function mergeSoftwareTomaDecisiones(subjects, includeCurrentOffer) {
+  const canonicalId = softwareTomaDecisionesCurricular.id
+  const duplicateId = 'software-toma-decisiones'
+  const canonical = subjects.find((subject) => subject.id === canonicalId)
+  const duplicate = subjects.find((subject) => subject.id === duplicateId)
+  if (!canonical && !duplicate && !includeCurrentOffer) return subjects
+
+  const sourceSubjects = [
+    ...(includeCurrentOffer ? [structuredClone(softwareTomaDecisionesCurricular)] : []),
+    ...(duplicate ? [duplicate] : []),
+    ...(canonical ? [canonical] : []),
+  ]
+  const groups = new Map(sourceSubjects.flatMap((subject) => subject.grupos ?? []).map((group) => [group.id, group]))
+  const merged = {
+    ...softwareTomaDecisionesCurricular,
+    ...canonical,
+    id: canonicalId,
+    clave: softwareTomaDecisionesCurricular.clave,
+    nombre: softwareTomaDecisionesCurricular.nombre,
+    creditos: softwareTomaDecisionesCurricular.creditos,
+    semestreCurricular: softwareTomaDecisionesCurricular.semestreCurricular,
+    grupos: [...groups.values()],
+  }
+  const firstIndex = Math.min(
+    ...[canonicalId, duplicateId]
+      .map((id) => subjects.findIndex((subject) => subject.id === id))
+      .filter((index) => index >= 0),
+    subjects.length,
+  )
+  const result = subjects.filter((subject) => subject.id !== canonicalId && subject.id !== duplicateId)
+  result.splice(firstIndex, 0, merged)
+  return result
+}
+
 function migrateState(state) {
   const previousSchemaVersion = state.schemaVersion ?? 1
   const periods = state.periods.map((period) => {
-    const subjects = (period.subjects ?? []).map((subject) => normalizeSubject(subject, previousSchemaVersion))
+    let subjects = (period.subjects ?? []).map((subject) => normalizeSubject(subject, previousSchemaVersion))
     if (previousSchemaVersion < 2 && period.id === DEFAULT_PERIOD_ID && !subjects.some((subject) => subject.id === planeacionProvisionalEspecialidad.id)) {
       subjects.push(structuredClone(planeacionProvisionalEspecialidad))
     }
@@ -121,6 +155,9 @@ function migrateState(state) {
       for (const subject of materiasCurricularesOctavoPendientes) {
         if (!subjects.some((current) => current.id === subject.id)) subjects.push(structuredClone(subject))
       }
+    }
+    if (previousSchemaVersion < 5) {
+      subjects = mergeSoftwareTomaDecisiones(subjects, period.id === DEFAULT_PERIOD_ID)
     }
     return { ...period, subjects }
   })

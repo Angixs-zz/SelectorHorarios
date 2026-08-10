@@ -31,7 +31,7 @@ describe('oferta académica inicial', () => {
     ])
     expect(subjectById('programacion-logica-funcional').semestreCurricular).toBe(8)
     expect(planeacionProvisionalEspecialidad.semestreCurricular).toBeNull()
-    expect(subjectById('software-toma-decisiones-dad-2605').creditos).toBeNull()
+    expect(subjectById('software-toma-decisiones-dad-2605').creditos).toBe(5)
   })
 
   it('contiene exactamente las seis materias curriculares únicas de octavo', () => {
@@ -48,7 +48,7 @@ describe('oferta académica inicial', () => {
       'SCC1019',
       'SESSC10',
     ])
-    expect(subjectById('software-toma-decisiones').semestreCurricular).toBeNull()
+    expect(subjectById('software-toma-decisiones')).toBeUndefined()
     expect(subjectById('desarrollo-servicios-web').semestreCurricular).toBeNull()
   })
 
@@ -64,9 +64,16 @@ describe('oferta académica inicial', () => {
     expect(rooms).not.toEqual(expect.arrayContaining(['Ñ', 'Ñ1', 'Ñ2', 'buuuu']))
   })
 
-  it('mantiene separada la oferta existente de la planeación para nuevo ingreso', () => {
-    const existing = subjectById('software-toma-decisiones')
-    expect(existing.grupos.every((group) => group.alcance === 'oferta-administrativa-existente')).toBe(true)
+  it('unifica bajo DAD-2605 los grupos publicados con ambas claves', () => {
+    const subject = subjectById('software-toma-decisiones-dad-2605')
+    expect(subject.grupos.map((group) => group.grupo)).toEqual(['7SA', '7SB', '8SB', '8SC'])
+    expect(subject.grupos.find((group) => group.grupo === '7SA').sesiones).toEqual(expect.arrayContaining([
+      expect.objectContaining({ inicio: '08:00', fin: '09:00', aula: 'cmc6' }),
+    ]))
+    expect(subject.grupos.find((group) => group.grupo === '7SB').sesiones).toEqual(expect.arrayContaining([
+      expect.objectContaining({ inicio: '19:00', fin: '20:00', aula: 'I10' }),
+    ]))
+    expect(subject.grupos.filter((group) => group.grupo.startsWith('8')).every((group) => group.alcance === 'oferta-administrativa-existente')).toBe(true)
 
     const provisionalGroups = planeacionProvisionalEspecialidad.grupos
     expect(provisionalGroups).toHaveLength(3)
