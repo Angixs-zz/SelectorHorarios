@@ -82,6 +82,34 @@ h3 {
   font-size: 1.05rem;
 }
 
+.header-copy {
+  min-width: 0;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  margin-left: auto;
+  padding: 9px 13px;
+  color: #eef5f3;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.theme-toggle .info-icon {
+  color: #f0b48f;
+}
+
 .header-mark {
   display: grid;
   flex: 0 0 72px;
@@ -1378,13 +1406,33 @@ footer {
 
 @media (max-width: 680px) {
   .site-header {
+    position: relative;
     align-items: flex-start;
+    padding-right: 76px;
     padding-top: 34px;
     padding-bottom: 34px;
   }
 
   .header-mark {
     display: none;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 22px;
+    right: 18px;
+    width: 44px;
+    min-height: 44px;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .theme-toggle span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
   .page-shell {
@@ -1745,6 +1793,166 @@ footer {
 .compare-free.is-none {
   color: var(--muted);
   font-weight: 600;
+}
+
+:root[data-theme='dark'] {
+  --ink: #e8eef1;
+  --navy: #9fc4dc;
+  --navy-light: #79a9c8;
+  --paper: #151e26;
+  --line: #34424c;
+  --muted: #a4b1ba;
+  --accent: #e38a58;
+  color: var(--ink);
+  background: #0d141b;
+}
+
+[data-theme='dark'] body {
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(159, 196, 220, 0.035) 1px, transparent 1px),
+    #0d141b;
+  background-size: 100% 32px;
+}
+
+[data-theme='dark'] .panel,
+[data-theme='dark'] .results-panel,
+[data-theme='dark'] .stats-section,
+[data-theme='dark'] .generate-bar {
+  background: #151e26;
+  border-color: #34424c;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme='dark'] .period-panel,
+[data-theme='dark'] .selection-summary,
+[data-theme='dark'] .grid-corner,
+[data-theme='dark'] .day-heading,
+[data-theme='dark'] th {
+  color: #f5f8fa;
+  background: #173149;
+}
+
+[data-theme='dark'] .subject-card,
+[data-theme='dark'] .filter-card,
+[data-theme='dark'] .group-editor,
+[data-theme='dark'] .stat-card,
+[data-theme='dark'] .compare-picker,
+[data-theme='dark'] .compare-card,
+[data-theme='dark'] .compare-empty {
+  color: var(--ink);
+  background: #1b2630;
+  border-color: #3a4954;
+}
+
+[data-theme='dark'] .subject-card.is-selected,
+[data-theme='dark'] .pinned-subject.has-pinned-groups {
+  background: #173137;
+  border-color: #56877f;
+}
+
+[data-theme='dark'] .subject-meta span,
+[data-theme='dark'] .semester-switch,
+[data-theme='dark'] .filter-checks label,
+[data-theme='dark'] .pinned-panel-heading {
+  color: #c7d2d8;
+  background: #26343e;
+  border-color: #43535e;
+}
+
+[data-theme='dark'] .catalog-notice,
+[data-theme='dark'] .filter-result {
+  color: #b7ddd5;
+  background: #17302e;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] .session-row,
+[data-theme='dark'] .pinned-subject,
+[data-theme='dark'] .group-choice-list label,
+[data-theme='dark'] .group-session-list > span,
+[data-theme='dark'] .teacher-exclusions,
+[data-theme='dark'] .compare-pill,
+[data-theme='dark'] .compare-card-metrics > div,
+[data-theme='dark'] .compare-subjects li {
+  color: #e8eef1;
+  background-color: #101820;
+  border-color: #3b4a55;
+}
+
+[data-theme='dark'] input::placeholder {
+  color: #7f909b;
+}
+
+[data-theme='dark'] .button.ghost {
+  color: #b9d5e6;
+  border-color: #59717f;
+}
+
+[data-theme='dark'] .button.ghost:hover:not(:disabled) {
+  background: #263640;
+}
+
+[data-theme='dark'] .button.danger {
+  color: #ffaaa2;
+  background: #342124;
+  border-color: #804f52;
+}
+
+[data-theme='dark'] .text-button,
+[data-theme='dark'] .schedule-jump,
+[data-theme='dark'] .editor-panel label,
+[data-theme='dark'] .filter-card > label,
+[data-theme='dark'] .time-filter-fields label,
+[data-theme='dark'] .teacher-exclusions label,
+[data-theme='dark'] .unassigned-filter,
+[data-theme='dark'] .group-detail .detail-line {
+  color: #b8c8d1;
+}
+
+[data-theme='dark'] .day-column,
+[data-theme='dark'] .time-axis,
+[data-theme='dark'] .day-column:nth-of-type(even),
+[data-theme='dark'] .compare-day-cell {
+  background: #111a21;
+}
+
+[data-theme='dark'] .weekly-grid {
+  background: #293740;
+  border-color: #465660;
+}
+
+[data-theme='dark'] .hour-line {
+  border-color: #2d3a43;
+}
+
+[data-theme='dark'] .time-axis span {
+  color: #aebbc3;
+}
+
+[data-theme='dark'] tbody tr:nth-child(even) {
+  background: #1b252d;
+}
+
+[data-theme='dark'] td {
+  border-color: #34424c;
+}
+
+[data-theme='dark'] .group-detail.is-provisional,
+[data-theme='dark'] .schedule-warning,
+[data-theme='dark'] .compare-card-metrics .compare-provisional {
+  color: #f1cc8b;
+  background: #342a18;
+}
+
+[data-theme='dark'] .provisional-copy {
+  color: #f1cc8b;
+}
+
+[data-theme='dark'] footer {
+  color: #aab8c1;
+  background: #091017;
 }
 
 @media (prefers-reduced-motion: reduce) {

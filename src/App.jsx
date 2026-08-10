@@ -23,6 +23,7 @@ import {
   calculateTheoreticalCombinations,
   calculateTotalCredits,
 } from './utils/scheduleUtils.js'
+import { applyTheme, getPreferredTheme } from './utils/themeUtils.js'
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 
@@ -35,6 +36,7 @@ function App() {
   const [isExporting, setIsExporting] = useState(false)
   const [comparedIndexes, setComparedIndexes] = useState(() => new Set())
   const [filters, setFilters] = useState(emptyFilters)
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || getPreferredTheme())
   const [route, setRoute] = useState(() => `${window.location.pathname}${window.location.search}`)
   const activePeriod = catalogState.periods.find((period) => period.id === catalogState.activePeriodId) ?? catalogState.periods[0]
   const subjects = activePeriod.subjects
@@ -44,6 +46,8 @@ function App() {
     window.addEventListener('popstate', updateRoute)
     return () => window.removeEventListener('popstate', updateRoute)
   }, [])
+
+  useEffect(() => applyTheme(theme), [theme])
 
   const navigate = (path, { replace = false } = {}) => {
     const appPath = `${basePath}${path}`
@@ -214,7 +218,7 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} />
       <main className="page-shell">
         <AcademicPeriodSelector
           periods={catalogState.periods}

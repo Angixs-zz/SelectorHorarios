@@ -105,7 +105,7 @@ Los datos marcados como provisionales sirven para generar horarios, pero produce
 
 ## Primera etapa
 
-Esta versión incluye selección de materias, cálculo de créditos y combinaciones, generación con detección de empalmes, estadísticas, navegación, comparación de hasta cuatro horarios, cuadrícula semanal, resumen y pruebas unitarias.
+Esta versión incluye selección de materias, cálculo de créditos y combinaciones, generación con detección de empalmes, estadísticas, navegación, comparación de hasta cuatro horarios, cuadrícula semanal, resumen, tema claro/oscuro persistente y pruebas unitarias.
 
 ## Próximas etapas
 
